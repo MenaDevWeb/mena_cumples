@@ -13,7 +13,7 @@ pip install -r requirements.txt
 reflex init
 
 # Exportar el backend y frontend
-API_URL=https:\\menacumples-production.up.railway.app reflex export --frontend-only
+API_URL=https://menacumples-production.up.railway.app reflex export --frontend-only
 
 # Eliminar el directorio `public` existente
 rm -rf public
