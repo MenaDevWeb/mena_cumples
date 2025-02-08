@@ -17,7 +17,6 @@ from .styles.styles import style
 def index() -> rx.Component:
     return rx.fragment(
         create_main_screen()
-
     )  
 
 

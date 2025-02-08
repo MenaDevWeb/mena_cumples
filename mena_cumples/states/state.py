@@ -1,7 +1,6 @@
 import reflex as rx
 
-class State(rx.State):
-    
+class State(rx.State):    
         #navigation
     def navigate_to_15(self):
         return rx.redirect("/pack_15_pax")

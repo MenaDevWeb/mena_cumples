@@ -175,42 +175,46 @@ class FormBaseState(rx.State):
     def generate_whatsapp_message(self, pack_name, price, include_tortillas=False):
         data = self.collect_data()
         message = (
-            f"Fecha: {data['birth_date']}\n\n"
-            f"Hora: {data['birth_time']}\n\n"
+            f"Fecha: {data['birth_date']}\n"
+            f"Hora: {data['birth_time']}\n"
             f"Cumpleaños de: {data['child_name']} edad {data['child_age']}\n\n"
             f"{pack_name}\n\n"
             "Los packs de cumpleaños incluyen patatas, palomitas, bollería/galletas y frutos secos.\n\n"
         )
         if include_tortillas:
             message += "+ 2 TORTILLAS DE PATATAS INCLUIDAS\n\n"
-        message += (
-            f"{data['selected_food_option']}\n\n"
-        )
-
+        message += f"{data['selected_food_option']}\n\n"
+        
         # Formatear pizzas seleccionadas
-        if data['pizza_selected']:
-            message += "Pizzas:\n"
+        if data.get('pizza_selected') and any(data['pizza_selected'].values()):
+            message += "PIZZAS:\n"
             for pizza_type, quantity in data['pizza_selected'].items():
                 if quantity > 0:
                     message += f"{pizza_type}: {quantity}\n"
-
+            message += "\n"
+        
         # Formatear roscas seleccionadas
-        if data['rosca_selected']:
-            message += "ROSCAS:\n\n"
+        if data.get('rosca_selected') and any(data['rosca_selected'].values()):
+            message += "ROSCAS:\n"
             for rosca_type, quantity in data['rosca_selected'].items():
                 if quantity > 0:
                     message += f"{rosca_type}: {quantity}\n"
-
+            message += "\n"
+        
         # Formatear bebidas seleccionadas
-        if data['drink_selected']:
-            message += "BEBIDAS:\n\n"
+        if data.get('drink_selected') and any(data['drink_selected'].values()):
+            message += "BEBIDAS:\n"
             for drink_type, quantity in data['drink_selected'].items():
                 if quantity > 0:
                     message += f"{drink_type}: {quantity}\n"
-
+            message += "\n"
+        
+        # Formatear extras seleccionados
+        if data.get('extra_selected'):
+            message += f"EXTRAS:\n{data['extra_selected']}\n\n"
+        
         message += (
-            f"EXTRAS:\n\n{data['extra_selected']}\n\n"
-            f"REPOSTERÍA:\n\n{data['selected_bakery_option']}\n\n"
+            f"REPOSTERÍA:\n{data['selected_bakery_option']}\n\n"
             f"OBSERVACIONES:\n{data['observation_selected']}"
         )
 
@@ -219,7 +223,7 @@ class FormBaseState(rx.State):
         phone_number = '34952520965'
         whatsapp_url = f"https://wa.me/{phone_number}?text={message}"
         return rx.call_script(f"window.location.href = '{whatsapp_url}'")
-
+    
     # Funciones para enviar el WhatsApp según el pack seleccionado
     def send_whatsapp_message(self):
         if self.selected_pack == "Pack_15":
@@ -246,8 +250,8 @@ class FormBaseState(rx.State):
 
 # Función para la selección de pizzas y roscas con inputs pequeños (1 dígito)
 def seleccion_pizzas(pizza_title, pizza_description, pizza_selected_values, rosca_selected_values, max_allowed):
-    pizza_types = ["margarita", "prosciutto", "salchicha", "pepperoni", "atún"]
-    rosca_types = ["mixta", "atún", "lomo", "catalana"]
+    pizza_types = ["Margarita", "Prosciutto", "Salchicha", "Pepperoni", "Atún"]
+    rosca_types = ["Mixta", "Atún", "Lomo", "Catalana"]
 
     # Ensure pizza_selected_values is a dictionary
     if not isinstance(pizza_selected_values, dict):

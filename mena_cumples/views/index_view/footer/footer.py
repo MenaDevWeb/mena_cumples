@@ -16,7 +16,7 @@ def footer() -> rx.Component:
                         height="10px",
                         on_click=
                             rx.redirect(
-                                "https://reflex.dev/",external=True
+                                "https://reflex.dev/",is_external=True
                             ),                
                     ),
             align="center"

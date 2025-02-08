@@ -57,20 +57,6 @@ def body() -> rx.Component:
                 margin_top = Size.SMALL.value,
                 on_click=lambda: State.navigate_to_30
             ),
-            rx.text(
-                "PACK DE 5,95€---POR NIÑO",
-                margin_top = Size.LARGE.value,
-                weight="bold",
-                align="center",
-                ),
-            rx.button(
-                rx.text("Selecciona"),
-                variant = "surface",
-                color_scheme = "plum",
-                width = "100%",
-                margin_top = Size.SMALL.value,
-                #on_click=lambda: State.navigate_to_595
-            ),
         variant = "surface",
         border_radius = "20px 20px",
         size= "5",

@@ -51,7 +51,11 @@ def pack_form(
                         ),
                         rx.flex(
                             rx.alert_dialog.action(
-                                rx.button("Entendido", on_click=FormBaseState.close_alert_dialog),
+                                rx.button(
+                                    "Entendido", 
+                                    margin_top="1em" ,
+                                    on_click=FormBaseState.close_alert_dialog
+                                ),
                             ),
                             spacing="3",
                         ),
@@ -150,8 +154,8 @@ def seleccion_alimentos(sandwiches_text, food_options, pack_description, tortill
 
 # Función para la selección de pizzas y roscas con inputs pequeños (1 dígito)
 def seleccion_pizzas(pizza_title, pizza_description, pizza_selected_values, rosca_selected_values, max_allowed):
-    pizza_types = ["margarita", "prosciutto", "salchicha", "pepperoni", "atún"]
-    rosca_types = ["mixta", "atún", "lomo", "catalana"]
+    pizza_types = ["Margarita", "Prosciutto", "Salchicha", "Pepperoni", "Atún"]
+    rosca_types = ["Mixta", "Atún", "Lomo", "Catalana"]
 
     # Ensure pizza_selected_values is a dictionary
     if not isinstance(pizza_selected_values, dict):
@@ -284,12 +288,11 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
     return rx.vstack(
         rx.text(extra_title, weight="bold", margin_top="30px"),
         rx.text(extra_description, style={"font_style":"italic"}),
-        rx.spacer(margin_top="20px"),
         rx.input(
             placeholder="Extras", 
             value=extra_selected,
             on_change=lambda new_value: FormBaseState.update_field("extra_selected", new_value),
-            style={"width": "85%", "height": "32px"},
+            style={"width": "100%", "height": "50px"},
         ),
         rx.text(bakery_title, weight="bold", margin_top="30px"),
         rx.flex(radio_button_bakery(bakery_options), margin_top="20px"),
@@ -298,23 +301,10 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
             placeholder="Observaciones", 
             value=observation_selected_value,
             on_change=lambda new_value: FormBaseState.update_field("observation_selected", new_value),
-            style={"width": "85%", "height": "80px"},
-            margin_top="20px"
+            style={"width": "100%", "height": "80px"},
+            margin_top="20px",
+            margin_bottom="20px"
         )
-    )
-
-# Función para aceptar condiciones
-def aceptar_condiciones():
-    return rx.vstack(
-        rx.checkbox(
-            rx.text(
-                "He leído y acepto las condiciones. (acepte para poder enviar el pedido)",
-                color="black", font_size="14px", font_weight="bold", margin_bottom="20px"
-            ),
-            on_change=lambda new_value: FormBaseState.update_field("conditions_acepted", new_value),
-            required=True
-        ),
-        spacing="2", margin_top="20px"
     )
 
 # Función para seleccionar el pack
