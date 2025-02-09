@@ -10,23 +10,39 @@ def pack_30() -> rx.Component:
             pack.pack_form(
                 state=FormBaseState.select_pack("Pack_30"),
                 image_url="/pack_30.jpeg",               
-                pack_type="PACK DE 30 PERSONAS--180€",
+                pack_type="PACK DE 30 PERSONAS -- 180€",
+                
+                # Nombre y fecha del cumpleaños
                 name_title="*¿Nombre del niño o niña del cumpleaños y edad?",
                 date_time="*¿Fecha y hora del cumpleaños?",
                 time_description="Tenga en cuenta que el máximo son 2 horas y media.",
+                
+                # Opciones de comida
                 sandwiches_text="*¿Desea bocadillos, sandwiches o mitad bocadillos y mitad sandwiches?",
-                food_options = current_food_options,
+                food_options=current_food_options,
                 pack_description="Los packs de cumpleaños incluyen patatas, palomitas, bollería/galletas y frutos secos.",
                 tortilla_description="+ 2 TORTILLAS INCLUIDAS.",
-                pizza_title="*¿De un total de 5 pizzas o 5 roscas a elegir, de que le gustaría las pizzas o roscas?",
-                pizza_description="(ej: también puede elegir 3 pizza y 2 roscas...total de 5 unidades)",
-                drink_title="¿De un total de 10 refrescos que le gustaría pedir? ",
-                drink_description="(tenga en cuenta que los cafés, bebidas alcohólicas etc. van aparte) ",
+                
+                # Pizzas y roscas
+                pizza_title="*¿De un total de 5 pizzas o 5 roscas a elegir, de qué le gustaría las pizzas o roscas?",
+                pizza_description="(Ejemplo: también puede elegir 3 pizzas y 2 roscas... total de 5 unidades)",
+                
+                # Bebidas
+                drink_title="¿De un total de 10 refrescos, qué le gustaría pedir?",
+                drink_description="(Tenga en cuenta que los cafés, bebidas alcohólicas, etc., van aparte)", 
+                
+                # Extras
                 extra_title="EXTRAS",
-                extra_description="Pueden ser: Pizzas o roscas a 6€ Y Refrescos a 3,50€.",
+                extra_description="Pueden ser:- Pizzas o roscas a 6€ - Refrescos a 3,50€ - Plato de gominolas variadas a 2€ cada uno.",
+                
+                # Repostería
                 bakery_title="REPOSTERÍA",
-                bakery_options = current_bakery_options,
+                bakery_options=current_bakery_options,
+                
+                # Observaciones
                 observation_title="OBSERVACIONES",
+                
+                # Valores predeterminados
                 child_name_value="",  
                 birth_date_value="",  
                 birth_time_value="",
@@ -35,8 +51,7 @@ def pack_30() -> rx.Component:
                 drink_selected_value="",
                 extra_selected="",
                 observation_selected_value="",  
-            ),
-            
+            ),            
             rx.text(),
             rx.flex(  
                 rx.button(
@@ -82,3 +97,12 @@ current_bakery_options = [
     "Palmera gigante de Chocolate y relleno de kinder--28€.",
     "LA TARTA LA TRAEMOS NOSOTROS."
 ]
+
+def extra_description_component():
+    return rx.flex(
+        rx.text("Pizzas o roscas a 6€"),
+        rx.text("Refrescos a 3,50€"),
+        rx.text("Plato de gominolas variadas a 2€ cada uno"),
+        direction="column",
+        spacing="1"
+    )

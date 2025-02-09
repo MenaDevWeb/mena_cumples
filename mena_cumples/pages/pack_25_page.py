@@ -23,7 +23,7 @@ def pack_25() -> rx.Component:
                 drink_title="¿De un total de 8 refrescos que le gustaría pedir? ",
                 drink_description="(tenga en cuenta que los cafés, bebidas alcohólicas etc. van aparte) ",
                 extra_title="EXTRAS",
-                extra_description="Pueden ser: Pizzas o roscas a 6€ Y Refrescos a 3,50€.",
+                extra_description="Pueden ser:- Pizzas o roscas a 6€ - Refrescos a 3,50€ - Plato de gominolas variadas a 2€ cada uno.",
                 bakery_title="REPOSTERÍA",
                 bakery_options = current_bakery_options,
                 observation_title="OBSERVACIONES",
