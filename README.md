@@ -1,3 +1,6 @@
+![Mena Cumples Header](assets/mena_cumples.png)
+
+
 # 🎉 Mena Cumples
 
 **Mena Cumples** es una web donde puedes consultar los packs de cumpleaños que ofrece la cafetería del **Hotel Mena Plaza** y realizar tu pedido de forma rápida y sencilla. ¡Celebra con estilo en el corazón de Nerja! 🎂🥳
