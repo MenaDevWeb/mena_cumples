@@ -1,8 +1,9 @@
 import reflex as rx
+from ..routes import Routes
 from mena_cumples.states.contact_form_state import ContactFormState
 
 
-@rx.page(route="/contact_form_page")
+@rx.page(route=Routes.CONTACT_FORM_PAGE.value)
 def create_page_layout():
     """Create the overall page layout with gradient background and centered form container."""
     return rx.fragment(

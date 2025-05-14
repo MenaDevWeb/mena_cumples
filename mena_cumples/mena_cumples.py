@@ -11,9 +11,10 @@ from .pages.packs_information_page import packs_information
 from .styles.styles import style
 from .components.navbar import navbar
 from .components.footer import footer
+from .routes import Routes
 
 
-@rx.page(route="/", title="Cumpleaños Mena Plaza")
+@rx.page(route=Routes.INDEX.value, title="Cumpleaños Mena Plaza")
 def index() -> rx.Component:
     return rx.fragment(
         create_main_screen()
@@ -89,7 +90,7 @@ def create_main_content():
                 image_src="/packs_info_image.webp",
                 title="Nuestros Packs de cumples.",
                 description="Información de los packs que ofrecemos.",
-                href="/packs_information"
+                href=Routes.PACKS_INFORMATION.value
             ),
             create_feature_box(
                 image_alt="seleccion del pack",
@@ -295,7 +296,7 @@ def create_deposit_text(text):
 def create_button(text):
     """Create a styled button with hover effect and transition properties."""
     return rx.cond(
-        State.conditions_acepted, # Usamos IndexState
+        State.conditions_acepted,
         rx.button(
             text,
             on_click=State.handle_ask_availability_click, # Usamos el método de IndexState

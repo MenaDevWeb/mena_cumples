@@ -1,9 +1,12 @@
 import reflex as rx
 import mena_cumples.components.pack_form as pack
 from mena_cumples.states.form_state import FormBaseState
+from ..routes import Routes
 
 
-@rx.page(route="/pack_25_pax", title="Pack 25 personas")
+
+
+@rx.page(route=Routes.PACK_25_PAX.value, title="Pack 25 personas")
 def pack_25() -> rx.Component:
     return rx.container(
         rx.vstack(

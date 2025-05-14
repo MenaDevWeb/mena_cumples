@@ -3,20 +3,6 @@ import reflex as rx
 class State(rx.State):
     conditions_acepted: bool = False
     
-        #navigation
-    def navigate_to_15(self):
-        return rx.redirect("/pack_15_pax")
-    
-    def navigate_to_20(self):
-        return rx.redirect("/pack_20_pax")
-    
-    def navigate_to_25(self):
-        return rx.redirect("/pack_25_pax")
-    
-    def navigate_to_30(self):
-        return rx.redirect("/pack_30_pax")
-    
-
     def set_conditions_acepted(self, value: bool):
         """
         Actualiza el estado de si las condiciones han sido aceptadas.

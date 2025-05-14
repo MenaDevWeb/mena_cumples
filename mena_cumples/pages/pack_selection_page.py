@@ -3,117 +3,10 @@ from mena_cumples.styles.styles import Size
 from mena_cumples.states.state import State
 from mena_cumples.components.navbar import navbar # Importar navbar
 from mena_cumples.components.footer import footer # Importar footer
+from ..routes import Routes # Asegúrate que Routes está importado
 
 
-
-# Datos de los packs
-PACK_OPTIONS_DATA = [
-    {
-        "title": "PACK DE 90€---PARA 15 PERSONAS",
-        "image_src": "/pack_15_image.webp", # Necesitarás crear esta imagen
-        "on_click": State.navigate_to_15,
-    },
-    {
-        "title": "PACK DE 120€---PARA 20 PERSONAS",
-        "image_src": "/pack_20_image.webp", # Necesitarás crear esta imagen
-        "on_click": State.navigate_to_20,
-    },
-    {
-        "title": "PACK DE 150€---PARA 25 PERSONAS",
-        "image_src": "/pack_25_image.webp", # Necesitarás crear esta imagen
-        "on_click": State.navigate_to_25,
-    },
-    {
-        "title": "PACK DE 180€---PARA 30 PERSONAS",
-        "image_src": "/pack_30_image.jpeg", # Necesitarás crear esta imagen
-        "on_click": State.navigate_to_30,
-    },
-]
-
-def main_title() -> rx.Component:
-    
-    return rx.flex(  
-        rx.vstack(
-            rx.image(
-                src="/pedido_ic.png", 
-                width="300px", 
-                height="auto",
-                # margin_top="20px" # Eliminado para control centralizado del espaciado
-            ),
-            align="center", # Asegura que la imagen esté centrada en este vstack
-        ),
-        width="100%",
-        justify_content="center"    
-    )
-
-
-def _create_pack_card(title: str, image_src: str, on_click_action: callable = None) -> rx.Component:
-    """Crea una card para un pack específico."""
-    return rx.card(
-        rx.vstack(
-            rx.image(
-                src=image_src,
-                width="100%",
-                height="200px", # Ajusta la altura según tus imágenes
-                object_fit="cover",
-                border_radius="10px 10px 0 0" # Redondea solo las esquinas superiores de la imagen
-            ),
-            rx.text(
-                title,
-                weight="bold",
-                align="center",
-                padding_y=Size.SMALL.value,
-                padding_x=Size.SMALL.value,
-                size="4" # Ajusta el tamaño del texto si es necesario
-            ),
-            rx.button(
-                rx.text("Selecciona"),
-                variant="surface",
-                color_scheme="plum",
-                width="90%", # Un poco menos del 100% para que no toque los bordes de la card
-                margin_top=Size.SMALL.value,
-                margin_bottom=Size.SMALL.value, # Añadir margen inferior al botón
-                on_click=on_click_action if on_click_action else lambda: None,
-                disabled=not on_click_action, # Deshabilita el botón si no hay acción
-            ),
-            spacing="1",
-            align="center",
-            width="100%"
-        ),
-        variant="surface", # O puedes probar "outline" o "ghost"
-        border_radius="15px", # Redondeo general de la card
-        width="100%",
-        _hover={"box_shadow": "0px 6px 12px rgba(0,0,0,0.15)"}, # Efecto hover sutil
-        transition="box-shadow 0.3s ease-in-out", # Transición suave para el hover
-    )
-
-
-def pack_options_grid() -> rx.Component:
-    """Crea el grid de cards para los packs."""
-    return rx.center(
-        rx.vstack(
-            main_title(),
-            rx.grid(
-                *[
-                    _create_pack_card(
-                        title=pack["title"],
-                        image_src=pack["image_src"],
-                        on_click_action=pack["on_click"]
-                    )
-                    for pack in PACK_OPTIONS_DATA
-                ],
-                columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"), # Columnas responsivas
-                spacing="7", # Espaciado entre cards
-                width="100%",
-                max_width="1200px", # Pero se limita a 1200px
-                padding=Size.MEDIUM.value, # Padding dentro del grid
-            ),
-            width="100%", # El center ocupa todo el ancho disponible para poder centrar el grid
-        ),
-        direction="column"
-    )
-
-@rx.page(route="/pack_selection")
+@rx.page(route=Routes.PACK_SELECTION.value)
 def pack_selection() -> rx.Component:
     return rx.box(
         # Navbar Container
@@ -153,3 +46,122 @@ def pack_selection() -> rx.Component:
         flex_direction="column", # Organiza navbar, contenido y footer verticalmente
         background_color="#EBE6EF", # Color de fondo para el área de contenido
     )
+
+
+
+def main_title() -> rx.Component:    
+    return rx.flex(  
+        rx.vstack(
+            rx.image(
+                src="/pedido_ic.png", 
+                width="300px", 
+                height="auto",
+                # margin_top="20px" # Eliminado para control centralizado del espaciado
+            ),
+            align="center", # Asegura que la imagen esté centrada en este vstack
+        ),
+        width="100%",
+        justify_content="center"    
+    )
+
+
+def _create_pack_card(title: str, image_src: str, on_click_action: str | None = None) -> rx.Component:
+    button_or_link = rx.link(
+        rx.button(
+            rx.text("Selecciona"),
+            variant="surface",
+            color_scheme="plum",
+            width="100%", # El botón ocupa todo el ancho del enlace
+        ),
+        href=on_click_action if on_click_action else "#", # El enlace maneja la navegación
+        is_external=False,
+        width="90%", # Ancho del área clickeable del enlace
+        margin_top=Size.SMALL.value,
+        margin_bottom=Size.SMALL.value,
+        style={"text_decoration": "none"}, # Para que no parezca un enlace subrayado tradicional
+        disabled=not on_click_action, # rx.link no tiene 'disabled', esto es conceptual
+        ) if on_click_action else rx.button( # Botón deshabilitado si no hay acción
+        rx.text("Selecciona"),
+        variant="surface", color_scheme="plum", width="90%",
+        margin_top=Size.SMALL.value, margin_bottom=Size.SMALL.value,
+        disabled=True,
+    )
+
+    return rx.card(
+        rx.vstack(
+            rx.image(
+                src=image_src,
+                width="100%",
+                height="200px", # Ajusta la altura según tus imágenes
+                object_fit="cover",
+                border_radius="10px 10px 0 0" # Redondea solo las esquinas superiores de la imagen
+            ),
+            rx.text(
+                title,
+                weight="bold",
+                align="center",
+                padding_y=Size.SMALL.value,
+                padding_x=Size.SMALL.value,
+                size="4" # Ajusta el tamaño del texto si es necesario
+            ),
+            button_or_link, # Usar la Opción A o la Opción B de arriba
+            spacing="1",
+            align="center",
+            width="100%"
+        ),
+        variant="surface", # O puedes probar "outline" o "ghost"
+        border_radius="15px", # Redondeo general de la card
+        width="100%",
+        _hover={"box_shadow": "0px 6px 12px rgba(0,0,0,0.15)"}, # Efecto hover sutil
+        transition="box-shadow 0.3s ease-in-out", # Transición suave para el hover
+    )
+
+
+def pack_options_grid() -> rx.Component:
+    """Crea el grid de cards para los packs."""
+    return rx.center(
+        rx.vstack(
+            main_title(),
+            rx.grid(
+                *[
+                    _create_pack_card(
+                        title=pack["title"],
+                        image_src=pack["image_src"],
+                        on_click_action=pack["on_click"]
+                    )
+                    for pack in PACK_OPTIONS_DATA
+                ],
+                columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"), # Columnas responsivas
+                spacing="7", # Espaciado entre cards
+                width="100%",
+                max_width="1200px", # Pero se limita a 1200px
+                padding=Size.MEDIUM.value, # Padding dentro del grid
+            ),
+            width="100%", # El center ocupa todo el ancho disponible para poder centrar el grid
+        ),
+        direction="column"
+    )
+
+# Datos de los packs
+PACK_OPTIONS_DATA = [
+    {
+        "title": "PACK DE 90€---PARA 15 PERSONAS",
+        "image_src": "/pack_15_image.webp", # Necesitarás crear esta imagen
+        "on_click": Routes.PACK_15_PAX.value,
+    },
+    {
+        "title": "PACK DE 120€---PARA 20 PERSONAS",
+        "image_src": "/pack_20_image.webp", # Necesitarás crear esta imagen
+        "on_click":Routes.PACK_20_PAX.value,
+    },
+    {
+        "title": "PACK DE 150€---PARA 25 PERSONAS",
+        "image_src": "/pack_25_image.webp", # Necesitarás crear esta imagen
+        "on_click": Routes.PACK_25_PAX.value,
+    },
+    {
+        "title": "PACK DE 180€---PARA 30 PERSONAS",
+        "image_src": "/pack_30_image.jpeg", # Necesitarás crear esta imagen
+        "on_click": Routes.PACK_30_PAX.value,
+    },
+]
