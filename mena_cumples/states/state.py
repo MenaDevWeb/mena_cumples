@@ -1,4 +1,5 @@
 import reflex as rx
+from ..routes import Routes
 
 class State(rx.State):
     conditions_acepted: bool = False
@@ -16,7 +17,7 @@ class State(rx.State):
         Redirige a la página de solicitud de contacto si las condiciones son aceptadas.
         """
         if self.conditions_acepted:
-            return rx.redirect("/solicitud_contacto") 
+            return rx.redirect(Routes.CONTACT_FORM_PAGE.value) 
         else:
             return rx.window_alert("Debe aceptar las condiciones para continuar.")
 

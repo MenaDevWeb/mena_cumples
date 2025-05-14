@@ -97,7 +97,7 @@ def create_main_content():
                 image_src="/pedidos_image.webp",
                 title="¡ Haz tu pedido !",
                 description="Debe aceptar condiciones y seleccione pack.",
-                href="/pack_selection",
+                href=Routes.PACK_SELECTION.value,
                 conditions_acepted=State.conditions_acepted  # Usamos state
             ),
             gap="2rem",
@@ -383,9 +383,9 @@ def create_check_icon():
 
 app = rx.App(style=style)
 app.add_page(index)
-app.add_page(pack_selection, route="/pack_selection" )
-app.add_page(packs_information, route="/pack_information")
-app.add_page(pack_15, route="/pack_15_pax")
-app.add_page(pack_20, route="/pack_20_pax")
-app.add_page(pack_25, route="/pack_25_pax")
-app.add_page(pack_30, route="/pack_30_pax")
+app.add_page(pack_selection)
+app.add_page(packs_information)
+app.add_page(pack_15)
+app.add_page(pack_20)
+app.add_page(pack_25)
+app.add_page(pack_30)
