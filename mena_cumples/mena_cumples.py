@@ -382,10 +382,3 @@ def create_check_icon():
 
 
 app = rx.App(style=style)
-app.add_page(index)
-app.add_page(pack_selection)
-app.add_page(packs_information)
-app.add_page(pack_15)
-app.add_page(pack_20)
-app.add_page(pack_25)
-app.add_page(pack_30)
