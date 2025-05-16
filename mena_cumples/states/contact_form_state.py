@@ -45,7 +45,7 @@ class ContactFormState(rx.State):
         encoded_message = quote(message)
         phone_number = '+34952520965'  # Número de WhatsApp de destino
         whatsapp_url = f"https://wa.me/{phone_number}?text={encoded_message}"
-        return rx.redirect(whatsapp_url, external=True)
+        return rx.call_script(f"window.location.href = '{whatsapp_url}'")
 
     def handle_submit(self, form_data: dict):
         """Maneja el envío del formulario y redirige a WhatsApp"""
