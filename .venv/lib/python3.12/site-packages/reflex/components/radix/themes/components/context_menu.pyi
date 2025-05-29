@@ -37,6 +37,7 @@ class ContextMenuRoot(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -71,6 +72,7 @@ class ContextMenuRoot(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -95,6 +97,7 @@ class ContextMenuTrigger(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -126,6 +129,7 @@ class ContextMenuTrigger(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -235,6 +239,7 @@ class ContextMenuContent(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -290,6 +295,7 @@ class ContextMenuContent(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -315,6 +321,7 @@ class ContextMenuSub(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -349,6 +356,7 @@ class ContextMenuSub(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -375,6 +383,7 @@ class ContextMenuSubTrigger(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -408,6 +417,7 @@ class ContextMenuSubTrigger(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -446,6 +456,7 @@ class ContextMenuSubContent(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -493,6 +504,7 @@ class ContextMenuSubContent(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -579,6 +591,7 @@ class ContextMenuItem(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -616,6 +629,7 @@ class ContextMenuItem(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -639,6 +653,7 @@ class ContextMenuSeparator(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -669,6 +684,7 @@ class ContextMenuSeparator(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -767,6 +783,7 @@ class ContextMenuCheckbox(Checkbox):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -811,6 +828,7 @@ class ContextMenuCheckbox(Checkbox):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -835,6 +853,7 @@ class ContextMenuLabel(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -866,6 +885,7 @@ class ContextMenuLabel(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -890,6 +910,7 @@ class ContextMenuGroup(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -921,6 +942,7 @@ class ContextMenuGroup(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -946,6 +968,7 @@ class ContextMenuRadioGroup(RadixThemesComponent):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -980,6 +1003,7 @@ class ContextMenuRadioGroup(RadixThemesComponent):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -1081,6 +1105,7 @@ class ContextMenuRadioItem(HighLevelRadioGroup):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -1124,6 +1149,7 @@ class ContextMenuRadioItem(HighLevelRadioGroup):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute

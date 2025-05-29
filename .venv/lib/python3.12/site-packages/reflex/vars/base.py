@@ -40,7 +40,6 @@ from typing import (  # noqa: UP035
 )
 
 from rich.markup import escape
-from sqlalchemy.orm import DeclarativeBase
 from typing_extensions import deprecated, override
 
 from reflex import constants
@@ -88,6 +87,12 @@ STRING_T = TypeVar("STRING_T", bound=str)
 SEQUENCE_TYPE = TypeVar("SEQUENCE_TYPE", bound=Sequence)
 
 warnings.filterwarnings("ignore", message="fields may not start with an underscore")
+
+_PYDANTIC_VALIDATE_VALUES = "__pydantic_validate_values__"
+
+
+def _pydantic_validator(*args, **kwargs):
+    return None
 
 
 @dataclasses.dataclass(
@@ -171,7 +176,8 @@ class VarData:
         object.__setattr__(self, "components", tuple(components or []))
 
         if hooks and any(hooks.values()):
-            merged_var_data = VarData.merge(self, *hooks.values())
+            # Merge our dependencies first, so they can be referenced.
+            merged_var_data = VarData.merge(*hooks.values(), self)
             if merged_var_data is not None:
                 object.__setattr__(self, "state", merged_var_data.state)
                 object.__setattr__(self, "field_name", merged_var_data.field_name)
@@ -233,11 +239,11 @@ class VarData:
         deps = [dep for var_data in all_var_datas for dep in var_data.deps]
 
         positions = list(
-            {
+            dict.fromkeys(
                 var_data.position
                 for var_data in all_var_datas
                 if var_data.position is not None
-            }
+            )
         )
         if positions:
             if len(positions) > 1:
@@ -363,11 +369,26 @@ def can_use_in_object_var(cls: GenericType) -> bool:
     )
 
 
+class MetaclassVar(type):
+    """Metaclass for the Var class."""
+
+    def __setattr__(cls, name: str, value: Any):
+        """Set an attribute on the class.
+
+        Args:
+            name: The name of the attribute.
+            value: The value of the attribute.
+        """
+        super().__setattr__(
+            name, value if name != _PYDANTIC_VALIDATE_VALUES else _pydantic_validator
+        )
+
+
 @dataclasses.dataclass(
     eq=False,
     frozen=True,
 )
-class Var(Generic[VAR_TYPE]):
+class Var(Generic[VAR_TYPE], metaclass=MetaclassVar):
     """Base class for immutable vars."""
 
     # The name of the var.
@@ -2694,6 +2715,27 @@ if TYPE_CHECKING:
     BASE_STATE = TypeVar("BASE_STATE", bound=BaseState)
 
 
+class _ComputedVarDecorator(Protocol):
+    """A protocol for the ComputedVar decorator."""
+
+    @overload
+    def __call__(
+        self,
+        fget: Callable[[BASE_STATE], Coroutine[Any, Any, RETURN_TYPE]],
+    ) -> AsyncComputedVar[RETURN_TYPE]: ...
+
+    @overload
+    def __call__(
+        self,
+        fget: Callable[[BASE_STATE], RETURN_TYPE],
+    ) -> ComputedVar[RETURN_TYPE]: ...
+
+    def __call__(
+        self,
+        fget: Callable[[BASE_STATE], Any],
+    ) -> ComputedVar[Any]: ...
+
+
 @overload
 def computed_var(
     fget: None = None,
@@ -2704,7 +2746,20 @@ def computed_var(
     interval: datetime.timedelta | int | None = None,
     backend: bool | None = None,
     **kwargs,
-) -> Callable[[Callable[[BASE_STATE], RETURN_TYPE]], ComputedVar[RETURN_TYPE]]: ...  # pyright: ignore [reportInvalidTypeVarUse]
+) -> _ComputedVarDecorator: ...
+
+
+@overload
+def computed_var(
+    fget: Callable[[BASE_STATE], Coroutine[Any, Any, RETURN_TYPE]],
+    initial_value: RETURN_TYPE | types.Unset = types.Unset(),
+    cache: bool = True,
+    deps: list[str | Var] | None = None,
+    auto_deps: bool = True,
+    interval: datetime.timedelta | int | None = None,
+    backend: bool | None = None,
+    **kwargs,
+) -> AsyncComputedVar[RETURN_TYPE]: ...
 
 
 @overload
@@ -3330,18 +3385,17 @@ def dispatch(
     ).guess_type()
 
 
-V = TypeVar("V")
-
-BASE_TYPE = TypeVar("BASE_TYPE", bound=Base | None)
-SQLA_TYPE = TypeVar("SQLA_TYPE", bound=DeclarativeBase | None)
-
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
+    from sqlalchemy.orm import DeclarativeBase
 
+    SQLA_TYPE = TypeVar("SQLA_TYPE", bound=DeclarativeBase | None)
+    BASE_TYPE = TypeVar("BASE_TYPE", bound=Base | None)
     DATACLASS_TYPE = TypeVar("DATACLASS_TYPE", bound=DataclassInstance | None)
+    MAPPING_TYPE = TypeVar("MAPPING_TYPE", bound=Mapping | None)
+    V = TypeVar("V")
 
 FIELD_TYPE = TypeVar("FIELD_TYPE")
-MAPPING_TYPE = TypeVar("MAPPING_TYPE", bound=Mapping | None)
 
 
 class Field(Generic[FIELD_TYPE]):

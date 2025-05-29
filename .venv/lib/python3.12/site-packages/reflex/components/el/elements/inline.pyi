@@ -250,6 +250,7 @@ class A(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -301,6 +302,7 @@ class A(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -502,6 +504,7 @@ class Abbr(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -545,6 +548,7 @@ class Abbr(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -746,6 +750,7 @@ class B(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -789,6 +794,7 @@ class B(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -990,6 +996,7 @@ class Bdi(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -1033,6 +1040,7 @@ class Bdi(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -1234,6 +1242,7 @@ class Bdo(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -1277,6 +1286,7 @@ class Bdo(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -1478,6 +1488,7 @@ class Br(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -1521,6 +1532,7 @@ class Br(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -1722,6 +1734,7 @@ class Cite(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -1765,6 +1778,7 @@ class Cite(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -1966,6 +1980,7 @@ class Code(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -2009,6 +2024,7 @@ class Code(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -2211,6 +2227,7 @@ class Data(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -2255,6 +2272,7 @@ class Data(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -2456,6 +2474,7 @@ class Dfn(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -2499,6 +2518,7 @@ class Dfn(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -2700,6 +2720,7 @@ class Em(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -2743,6 +2764,7 @@ class Em(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -2944,6 +2966,7 @@ class I(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -2987,6 +3010,7 @@ class I(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -3188,6 +3212,7 @@ class Kbd(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -3231,6 +3256,7 @@ class Kbd(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -3432,6 +3458,7 @@ class Mark(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -3475,6 +3502,7 @@ class Mark(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -3677,6 +3705,7 @@ class Q(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -3721,6 +3750,7 @@ class Q(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -3922,6 +3952,7 @@ class Rp(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -3965,6 +3996,7 @@ class Rp(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -4166,6 +4198,7 @@ class Rt(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -4209,6 +4242,7 @@ class Rt(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -4410,6 +4444,7 @@ class Ruby(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -4453,6 +4488,7 @@ class Ruby(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -4654,6 +4690,7 @@ class S(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -4697,6 +4734,7 @@ class S(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -4898,6 +4936,7 @@ class Samp(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -4941,6 +4980,7 @@ class Samp(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -5142,6 +5182,7 @@ class Small(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -5185,6 +5226,7 @@ class Small(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -5386,6 +5428,7 @@ class Span(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -5429,6 +5472,7 @@ class Span(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -5630,6 +5674,7 @@ class Strong(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -5673,6 +5718,7 @@ class Strong(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -5874,6 +5920,7 @@ class Sub(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -5917,6 +5964,7 @@ class Sub(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -6118,6 +6166,7 @@ class Sup(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -6161,6 +6210,7 @@ class Sup(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -6363,6 +6413,7 @@ class Time(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -6407,6 +6458,7 @@ class Time(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -6608,6 +6660,7 @@ class U(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -6651,6 +6704,7 @@ class U(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -6852,6 +6906,7 @@ class Wbr(BaseHTML):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -6895,6 +6950,7 @@ class Wbr(BaseHTML):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute

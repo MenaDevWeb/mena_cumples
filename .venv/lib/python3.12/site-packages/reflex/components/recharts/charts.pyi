@@ -28,6 +28,7 @@ class ChartBase(RechartsCharts):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -61,6 +62,7 @@ class ChartBase(RechartsCharts):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -98,6 +100,7 @@ class CategoricalChartBase(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -137,6 +140,7 @@ class CategoricalChartBase(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -178,6 +182,7 @@ class AreaChart(CategoricalChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -218,6 +223,7 @@ class AreaChart(CategoricalChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -260,6 +266,7 @@ class BarChart(CategoricalChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -304,6 +311,7 @@ class BarChart(CategoricalChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -341,6 +349,7 @@ class LineChart(CategoricalChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -380,6 +389,7 @@ class LineChart(CategoricalChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -425,6 +435,7 @@ class ComposedChart(CategoricalChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -469,6 +480,7 @@ class ComposedChart(CategoricalChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -495,6 +507,7 @@ class PieChart(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -533,6 +546,7 @@ class PieChart(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -567,6 +581,7 @@ class RadarChart(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -595,6 +610,7 @@ class RadarChart(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -631,6 +647,7 @@ class RadialBarChart(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -675,6 +692,7 @@ class RadialBarChart(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -702,6 +720,7 @@ class ScatterChart(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -729,6 +748,7 @@ class ScatterChart(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -757,6 +777,7 @@ class FunnelChart(ChartBase):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -793,6 +814,7 @@ class FunnelChart(ChartBase):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -830,6 +852,7 @@ class Treemap(RechartsCharts):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -871,6 +894,7 @@ class Treemap(RechartsCharts):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute

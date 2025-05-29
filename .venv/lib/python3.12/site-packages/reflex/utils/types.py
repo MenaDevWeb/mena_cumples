@@ -24,17 +24,13 @@ from typing import (  # noqa: UP035
     _GenericAlias,  # pyright: ignore [reportAttributeAccessIssue]
     _SpecialGenericAlias,  # pyright: ignore [reportAttributeAccessIssue]
     get_args,
+    is_typeddict,
 )
 from typing import get_origin as get_origin_og
 from typing import get_type_hints as get_type_hints_og
 
-import sqlalchemy
 from pydantic.v1.fields import ModelField
-from sqlalchemy.ext.associationproxy import AssociationProxyInstance
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import DeclarativeBase, Mapped, QueryableAttribute, Relationship
 from typing_extensions import Self as Self
-from typing_extensions import is_typeddict
 from typing_extensions import override as override
 
 import reflex
@@ -258,6 +254,20 @@ def is_optional(cls: GenericType) -> bool:
     return is_union(cls) and type(None) in get_args(cls)
 
 
+def is_classvar(a_type: Any) -> bool:
+    """Check if a type is a ClassVar.
+
+    Args:
+        a_type: The type to check.
+
+    Returns:
+        Whether the type is a ClassVar.
+    """
+    return a_type is ClassVar or (
+        type(a_type) is _GenericAlias and a_type.__origin__ is ClassVar
+    )
+
+
 def true_type_for_pydantic_field(f: ModelField):
     """Get the type for a pydantic field.
 
@@ -331,6 +341,8 @@ def get_property_hint(attr: Any | None) -> GenericType | None:
     Returns:
         The type hint of the property, if it is a property, else None.
     """
+    from sqlalchemy.ext.hybrid import hybrid_property
+
     if not isinstance(attr, (property, hybrid_property)):
         return None
     hints = get_type_hints(attr.fget)
@@ -349,6 +361,10 @@ def get_attribute_access_type(cls: GenericType, name: str) -> GenericType | None
     Returns:
         The type of the attribute, if accessible, or None
     """
+    import sqlalchemy
+    from sqlalchemy.ext.associationproxy import AssociationProxyInstance
+    from sqlalchemy.orm import DeclarativeBase, Mapped, QueryableAttribute, Relationship
+
     from reflex.model import Model
 
     try:
@@ -980,7 +996,7 @@ def typehint_issubclass(
     Returns:
         Whether the type hint is a subclass of the other type hint.
     """
-    if possible_superclass is Any:
+    if possible_subclass is possible_superclass or possible_superclass is Any:
         return True
     if possible_subclass is Any:
         return treat_any_as_subtype_of_everything

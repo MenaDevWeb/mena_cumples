@@ -18,11 +18,23 @@ class Stack(Flex):
     def create(  # type: ignore
         cls,
         *children,
-        spacing: Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        | Var[Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+        spacing: Breakpoints[
+            str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
+        | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        | Var[
+            Breakpoints[str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+            | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
         | None = None,
-        align: Literal["baseline", "center", "end", "start", "stretch"]
-        | Var[Literal["baseline", "center", "end", "start", "stretch"]]
+        align: Breakpoints[
+            str, Literal["baseline", "center", "end", "start", "stretch"]
+        ]
+        | Literal["baseline", "center", "end", "start", "stretch"]
+        | Var[
+            Breakpoints[str, Literal["baseline", "center", "end", "start", "stretch"]]
+            | Literal["baseline", "center", "end", "start", "stretch"]
+        ]
         | None = None,
         as_child: Var[bool] | bool | None = None,
         direction: Breakpoints[
@@ -233,6 +245,7 @@ class Stack(Flex):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -282,6 +295,7 @@ class Stack(Flex):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -298,14 +312,32 @@ class VStack(Stack):
     def create(  # type: ignore
         cls,
         *children,
-        direction: Literal["column", "column-reverse", "row", "row-reverse"]
-        | Var[Literal["column", "column-reverse", "row", "row-reverse"]]
+        direction: Breakpoints[
+            str, Literal["column", "column-reverse", "row", "row-reverse"]
+        ]
+        | Literal["column", "column-reverse", "row", "row-reverse"]
+        | Var[
+            Breakpoints[str, Literal["column", "column-reverse", "row", "row-reverse"]]
+            | Literal["column", "column-reverse", "row", "row-reverse"]
+        ]
         | None = None,
-        spacing: Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        | Var[Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+        spacing: Breakpoints[
+            str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
+        | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        | Var[
+            Breakpoints[str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+            | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
         | None = None,
-        align: Literal["baseline", "center", "end", "start", "stretch"]
-        | Var[Literal["baseline", "center", "end", "start", "stretch"]]
+        align: Breakpoints[
+            str, Literal["baseline", "center", "end", "start", "stretch"]
+        ]
+        | Literal["baseline", "center", "end", "start", "stretch"]
+        | Var[
+            Breakpoints[str, Literal["baseline", "center", "end", "start", "stretch"]]
+            | Literal["baseline", "center", "end", "start", "stretch"]
+        ]
         | None = None,
         as_child: Var[bool] | bool | None = None,
         justify: Breakpoints[str, Literal["between", "center", "end", "start"]]
@@ -507,6 +539,7 @@ class VStack(Stack):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -556,6 +589,7 @@ class VStack(Stack):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute
@@ -572,14 +606,32 @@ class HStack(Stack):
     def create(  # type: ignore
         cls,
         *children,
-        direction: Literal["column", "column-reverse", "row", "row-reverse"]
-        | Var[Literal["column", "column-reverse", "row", "row-reverse"]]
+        direction: Breakpoints[
+            str, Literal["column", "column-reverse", "row", "row-reverse"]
+        ]
+        | Literal["column", "column-reverse", "row", "row-reverse"]
+        | Var[
+            Breakpoints[str, Literal["column", "column-reverse", "row", "row-reverse"]]
+            | Literal["column", "column-reverse", "row", "row-reverse"]
+        ]
         | None = None,
-        spacing: Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        | Var[Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+        spacing: Breakpoints[
+            str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
+        | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        | Var[
+            Breakpoints[str, Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]]
+            | Literal["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        ]
         | None = None,
-        align: Literal["baseline", "center", "end", "start", "stretch"]
-        | Var[Literal["baseline", "center", "end", "start", "stretch"]]
+        align: Breakpoints[
+            str, Literal["baseline", "center", "end", "start", "stretch"]
+        ]
+        | Literal["baseline", "center", "end", "start", "stretch"]
+        | Var[
+            Breakpoints[str, Literal["baseline", "center", "end", "start", "stretch"]]
+            | Literal["baseline", "center", "end", "start", "stretch"]
+        ]
         | None = None,
         as_child: Var[bool] | bool | None = None,
         justify: Breakpoints[str, Literal["between", "center", "end", "start"]]
@@ -781,6 +833,7 @@ class HStack(Stack):
         | None = None,
         key: Any | None = None,
         id: Any | None = None,
+        ref: Var | None = None,
         class_name: Any | None = None,
         autofocus: bool | None = None,
         custom_attrs: dict[str, Var | Any] | None = None,
@@ -830,6 +883,7 @@ class HStack(Stack):
             style: The style of the component.
             key: A unique key for the component.
             id: The id for the component.
+            ref: The Var to pass as the ref to the component.
             class_name: The class name for the component.
             autofocus: Whether the component should take the focus once the page is loaded
             custom_attrs: custom attribute

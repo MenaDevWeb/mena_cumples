@@ -10,6 +10,7 @@ import json
 import logging
 import re
 import subprocess
+import sys
 import typing
 from collections.abc import Callable, Iterable, Sequence
 from fileinput import FileInput
@@ -221,6 +222,12 @@ def _get_type_hint(
             if ev.__name__ == "Var"
             else value
         )
+    elif isinstance(value, list):
+        res = [
+            _get_type_hint(arg, type_hint_globals, rx_types.is_optional(arg))
+            for arg in value
+        ]
+        return f"[{', '.join(res)}]"
     else:
         res = value.__name__
     if is_optional and not res.startswith("Optional") and not res.endswith("| None"):
@@ -381,13 +388,22 @@ def _extract_class_props_as_ast_nodes(
                     if isinstance(default, Var):
                         default = default._decode()
 
+            modules = {cls.__module__ for cls in target_class.__mro__}
+            available_vars = {}
+            for module in modules:
+                available_vars.update(sys.modules[module].__dict__)
+
             kwargs.append(
                 (
                     ast.arg(
                         arg=name,
                         annotation=ast.Name(
                             id=OVERWRITE_TYPES.get(
-                                name, _get_type_hint(value, type_hint_globals)
+                                name,
+                                _get_type_hint(
+                                    value,
+                                    type_hint_globals | available_vars,
+                                ),
                             )
                         ),
                     ),
@@ -1029,7 +1045,7 @@ class StubGenerator(ast.NodeTransformer):
             return node
         if isinstance(node.target, ast.Name) and node.target.id.startswith("_"):
             return None
-        if self.current_class in self.classes:
+        if self._current_class_is_component():
             # Remove annotated assignments in Component classes (props)
             return None
         # Blank out assignments in type stubs.
@@ -1221,7 +1237,7 @@ class PyiGenerator:
                     continue
                 subprocess.run(["git", "checkout", changed_file])
 
-        if cpu_count() == 1 or len(file_targets) < 5:
+        if True:
             self._scan_files(file_targets)
         else:
             self._scan_files_multiprocess(file_targets)

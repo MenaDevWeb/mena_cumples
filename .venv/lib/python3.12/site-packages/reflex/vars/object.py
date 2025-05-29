@@ -7,10 +7,17 @@ import dataclasses
 import typing
 from collections.abc import Mapping
 from inspect import isclass
-from typing import Any, NoReturn, TypeVar, get_args, get_type_hints, overload
+from typing import (
+    Any,
+    NoReturn,
+    TypeVar,
+    get_args,
+    get_type_hints,
+    is_typeddict,
+    overload,
+)
 
 from rich.markup import escape
-from typing_extensions import is_typeddict
 
 from reflex.utils import types
 from reflex.utils.exceptions import VarAttributeError
@@ -136,6 +143,14 @@ class ObjectVar(Var[OBJECT_TYPE], python_types=Mapping):
         return object_entries_operation(self)
 
     items = entries
+
+    def length(self) -> NumberVar[int]:
+        """Get the length of the object.
+
+        Returns:
+            The length of the object.
+        """
+        return self.keys().length()
 
     def merge(self, other: ObjectVar):
         """Merge two objects.

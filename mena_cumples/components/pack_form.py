@@ -170,7 +170,7 @@ def datos_personales(name_title, child_name_value, child_age_value, date_time, t
                     style={"width": "180px", "height": "40px", "font_size":"16px"}
                 ),
                 rx.select(
-                    ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"],
+                    ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"],
                     name="birth_time",
                     placeholder="Hora", 
                     on_change=lambda new_value: FormBaseState.update_field("birth_time", new_value),  # Ajuste para que use `update_field`

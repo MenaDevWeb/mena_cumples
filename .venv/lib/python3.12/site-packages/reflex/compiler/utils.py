@@ -66,7 +66,7 @@ def compile_import_statement(fields: list[ImportVar]) -> tuple[str, list[str]]:
     default = next(iter({field.name for field in defaults}), "")
     rest = {field.name for field in fields_set - defaults}
 
-    return default, list(rest)
+    return default, sorted(rest)
 
 
 def validate_imports(import_dict: ParsedImportDict):
@@ -309,7 +309,7 @@ def compile_custom_component(
         A tuple of the compiled component and the imports required by the component.
     """
     # Render the component.
-    render = component.get_component(component)
+    render = component.get_component()
 
     # Get the imports.
     imports: ParsedImportDict = {
@@ -500,7 +500,23 @@ def add_meta(
     return page
 
 
-def write_page(path: str | Path, code: str):
+def resolve_path_of_web_dir(path: str | Path) -> Path:
+    """Get the path under the web directory.
+
+    Args:
+        path: The path to get. It can be a relative or absolute path.
+
+    Returns:
+        The path under the web directory.
+    """
+    path = Path(path)
+    web_dir = get_web_dir()
+    if path.is_relative_to(web_dir):
+        return path.absolute()
+    return (web_dir / path).absolute()
+
+
+def write_file(path: str | Path, code: str):
     """Write the given code to the given path.
 
     Args:
@@ -508,7 +524,7 @@ def write_page(path: str | Path, code: str):
         code: The code to write.
     """
     path = Path(path)
-    path_ops.mkdir(path.parent)
+    path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists() and path.read_text(encoding="utf-8") == code:
         return
     path.write_text(code, encoding="utf-8")

@@ -12,6 +12,7 @@ from . import compiler as compiler
 from . import components as components
 from . import config as config
 from . import model as model
+from . import plugins as plugins
 from . import style as style
 from . import testing as testing
 from . import utils as utils

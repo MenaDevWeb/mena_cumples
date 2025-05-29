@@ -69,7 +69,7 @@ def create_birthday_request_form():
         ),
         create_label(label_text="Hora del cumple"),
         rx.select(
-            ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30"],
+            ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"],
             name="birth_time",  # Debe coincidir con el estado
             placeholder="Hora",
             on_change=lambda new_value: ContactFormState.set_birthday_time(new_value),
