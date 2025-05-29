@@ -101,12 +101,18 @@ class AbstractServer(Generic[WT]):
         ssl_cert: Optional[Path] = None,
         ssl_key: Optional[Path] = None,
         ssl_key_password: Optional[str] = None,
+        ssl_ca: Optional[Path] = None,
+        ssl_crl: Optional[List[Path]] = None,
+        ssl_client_verify: bool = False,
         url_path_prefix: Optional[str] = None,
         respawn_failed_workers: bool = False,
         respawn_interval: float = 3.5,
         workers_lifetime: Optional[int] = None,
         workers_kill_timeout: Optional[int] = None,
         factory: bool = False,
+        static_path_route: str = '/static',
+        static_path_mount: Optional[Path] = None,
+        static_path_expires: int = 86400,
         reload: bool = False,
         reload_paths: Optional[Sequence[Path]] = None,
         reload_ignore_dirs: Optional[Sequence[str]] = None,
@@ -152,6 +158,11 @@ class AbstractServer(Generic[WT]):
         self.workers_lifetime = workers_lifetime
         self.workers_kill_timeout = workers_kill_timeout
         self.factory = factory
+        self.static_path = (
+            (static_path_route, str(static_path_mount.resolve()), str(static_path_expires))
+            if static_path_mount
+            else None
+        )
         self.reload_paths = reload_paths or [Path.cwd()]
         self.reload_ignore_paths = reload_ignore_paths or ()
         self.reload_ignore_dirs = reload_ignore_dirs or ()
@@ -167,7 +178,7 @@ class AbstractServer(Generic[WT]):
 
         configure_logging(self.log_level, self.log_config, self.log_enabled)
 
-        self.build_ssl_context(ssl_cert, ssl_key, ssl_key_password)
+        self.build_ssl_context(ssl_cert, ssl_key, ssl_key_password, ssl_ca, ssl_crl or [], ssl_client_verify)
         self._ssp = None
         self._shd = None
         self._sfd = None
@@ -180,22 +191,39 @@ class AbstractServer(Generic[WT]):
         self.lifetime_signal = False
         self.pid = None
 
-    def build_ssl_context(self, cert: Optional[Path], key: Optional[Path], password: Optional[str]):
+    def build_ssl_context(
+        self,
+        cert: Optional[Path],
+        key: Optional[Path],
+        password: Optional[str],
+        ca: Optional[Path],
+        crl: List[Path],
+        client_verify: bool,
+    ):
         if not (cert and key):
-            self.ssl_ctx = (False, None, None)
+            self.ssl_ctx = (False, None, None, None, None, [], False)
             return
+        # uneeded?
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_cert_chain(cert, key, password)
-        # with cert.open("rb") as f:
-        #     cert_contents = f.read()
-        # with key.open("rb") as f:
-        #     key_contents = f.read()
-        self.ssl_ctx = (True, str(cert.resolve()), str(key.resolve()), password)
+        #: build ctx
+        if client_verify and not ca:
+            logger.warning('SSL client verification requires a CA certificate, ignoring')
+            client_verify = False
+        self.ssl_ctx = (
+            True,
+            str(cert.resolve()),
+            str(key.resolve()),
+            password,
+            str(ca.resolve()) if ca else None,
+            [item.resolve() for item in crl],
+            client_verify,
+        )
 
     def _init_shared_socket(self):
         self._ssp = SocketSpec(self.bind_addr, self.bind_port, self.backlog)
-        self._shd = self._ssp.share()
-        self._sfd = self._shd.get_fd() if self._shd is not None else None
+        self._shd = self._ssp.build()
+        self._sfd = self._shd.get_fd()
 
     def signal_handler_interrupt(self, *args, **kwargs):
         self.interrupt_signal = True

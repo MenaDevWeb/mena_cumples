@@ -5,7 +5,8 @@ from functools import wraps
 from typing import Any, Callable, Dict, Optional, Tuple
 
 from .._futures import _future_watcher_wrapper, _new_cbscheduler
-from .._granian import ASGIWorker, RSGIWorker, WSGIWorker
+from .._granian import ASGIWorker, RSGIWorker, SocketHolder, WSGIWorker
+from .._types import SSLCtx
 from ..asgi import LifespanProtocol, _callback_wrapper as _asgi_call_wrap
 from ..rsgi import _callback_wrapper as _rsgi_call_wrap, _callbacks_from_target as _rsgi_cbs_from_target
 from ..wsgi import _callback_wrapper as _wsgi_call_wrap
@@ -52,7 +53,10 @@ class WorkerProcess(AbstractWorker):
 
             configure_logging(log_level, log_config, log_enabled)
 
-            sock = (sock[0], sock[1].fileno() if sock[1] is not None else sock[1])
+            sock, _sso = sock
+            if sys.platform == 'win32':
+                sock = SocketHolder(_sso.fileno())
+
             loop = loops.get(loop_impl)
             callback = callback_loader()
             return target(worker_id, callback, sock, loop, *args, **kwargs)
@@ -93,8 +97,9 @@ class MPServer(AbstractServer[WorkerProcess]):
         http1_settings: Optional[HTTP1Settings],
         http2_settings: Optional[HTTP2Settings],
         websockets: bool,
+        static_path: Optional[Tuple[str, str, str]],
         log_access_fmt: Optional[str],
-        ssl_ctx: Tuple[bool, Optional[str], Optional[str], Optional[str]],
+        ssl_ctx: SSLCtx,
         scope_opts: Dict[str, Any],
     ):
         from granian._signals import set_loop_signals
@@ -114,6 +119,7 @@ class MPServer(AbstractServer[WorkerProcess]):
             http1_settings,
             http2_settings,
             websockets,
+            static_path,
             *ssl_ctx,
         )
         serve = getattr(worker, {RuntimeModes.mt: 'serve_mtr', RuntimeModes.st: 'serve_str'}[runtime_mode])
@@ -138,8 +144,9 @@ class MPServer(AbstractServer[WorkerProcess]):
         http1_settings: Optional[HTTP1Settings],
         http2_settings: Optional[HTTP2Settings],
         websockets: bool,
+        static_path: Optional[Tuple[str, str, str]],
         log_access_fmt: Optional[str],
-        ssl_ctx: Tuple[bool, Optional[str], Optional[str], Optional[str]],
+        ssl_ctx: SSLCtx,
         scope_opts: Dict[str, Any],
     ):
         from granian._signals import set_loop_signals
@@ -167,6 +174,7 @@ class MPServer(AbstractServer[WorkerProcess]):
             http1_settings,
             http2_settings,
             websockets,
+            static_path,
             *ssl_ctx,
         )
         serve = getattr(worker, {RuntimeModes.mt: 'serve_mtr', RuntimeModes.st: 'serve_str'}[runtime_mode])
@@ -192,8 +200,9 @@ class MPServer(AbstractServer[WorkerProcess]):
         http1_settings: Optional[HTTP1Settings],
         http2_settings: Optional[HTTP2Settings],
         websockets: bool,
+        static_path: Optional[Tuple[str, str, str]],
         log_access_fmt: Optional[str],
-        ssl_ctx: Tuple[bool, Optional[str], Optional[str], Optional[str]],
+        ssl_ctx: SSLCtx,
         scope_opts: Dict[str, Any],
     ):
         from granian._signals import set_loop_signals
@@ -215,6 +224,7 @@ class MPServer(AbstractServer[WorkerProcess]):
             http1_settings,
             http2_settings,
             websockets,
+            static_path,
             *ssl_ctx,
         )
         serve = getattr(worker, {RuntimeModes.mt: 'serve_mtr', RuntimeModes.st: 'serve_str'}[runtime_mode])
@@ -240,8 +250,9 @@ class MPServer(AbstractServer[WorkerProcess]):
         http1_settings: Optional[HTTP1Settings],
         http2_settings: Optional[HTTP2Settings],
         websockets: bool,
+        static_path: Optional[Tuple[str, str, str]],
         log_access_fmt: Optional[str],
-        ssl_ctx: Tuple[bool, Optional[str], Optional[str], Optional[str]],
+        ssl_ctx: SSLCtx,
         scope_opts: Dict[str, Any],
     ):
         from granian._signals import set_sync_signals
@@ -260,6 +271,7 @@ class MPServer(AbstractServer[WorkerProcess]):
             http_mode,
             http1_settings,
             http2_settings,
+            static_path,
             *ssl_ctx,
         )
         serve = getattr(worker, {RuntimeModes.mt: 'serve_mtr', RuntimeModes.st: 'serve_str'}[runtime_mode])
@@ -268,15 +280,12 @@ class MPServer(AbstractServer[WorkerProcess]):
 
     def _init_shared_socket(self):
         super()._init_shared_socket()
-        self._sso = None
-        if self._sfd is not None:
-            sock = socket.socket(fileno=self._sfd)
-            sock.set_inheritable(True)
-            self._sso = sock
+        sock = socket.socket(fileno=self._sfd)
+        sock.set_inheritable(True)
+        self._sso = sock
 
     def _unlink_pidfile(self):
-        if self._sso is not None:
-            self._sso.detach()
+        self._sso.detach()
         super()._unlink_pidfile()
 
     def _spawn_worker(self, idx, target, callback_loader) -> WorkerProcess:
@@ -288,7 +297,7 @@ class MPServer(AbstractServer[WorkerProcess]):
                 idx + 1,
                 self.process_name,
                 callback_loader,
-                (self._ssp, self._sso),
+                (self._shd, self._sso),
                 self.loop,
                 self.log_enabled,
                 self.log_level,
@@ -304,6 +313,7 @@ class MPServer(AbstractServer[WorkerProcess]):
                 self.http1_settings,
                 self.http2_settings,
                 self.websockets,
+                self.static_path,
                 self.log_access_format if self.log_access else None,
                 self.ssl_ctx,
                 {'url_path_prefix': self.url_path_prefix},
