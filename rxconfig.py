@@ -6,5 +6,6 @@ config = rx.Config(
     show_built_with_reflex=False,
     plugins=[
         rx.plugins.TailwindV3Plugin(),
+        rx.plugins.sitemap.SitemapPlugin(),
     ],    
 )
