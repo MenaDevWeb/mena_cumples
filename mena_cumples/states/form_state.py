@@ -193,22 +193,19 @@ class FormBaseState(rx.State):
         message += f"{data['selected_food_option']}\n\n"
 
         if data['pizza_selected']:
-            message += "PIZZAS:\n"
-            for pizza_type, quantity in data['pizza_selected'].items():
-                if quantity > 0:
-                    message += f"{pizza_type}: {quantity}\n\n"
+            pizzas_items = [f"{pizza_type}: {quantity}" for pizza_type, quantity in data['pizza_selected'].items() if quantity > 0]
+            if pizzas_items:
+                message += "PIZZAS:\n" + "\n".join(pizzas_items) + "\n\n"
 
         if data['rosca_selected']:
-            message += "ROSCAS:\n"
-            for rosca_type, quantity in data['rosca_selected'].items():
-                if quantity > 0:
-                    message += f"{rosca_type}: {quantity}\n\n"
+            roscas_items = [f"{rosca_type}: {quantity}" for rosca_type, quantity in data['rosca_selected'].items() if quantity > 0]
+            if roscas_items:
+                message += "ROSCAS:\n" + "\n".join(roscas_items) + "\n\n"
 
         if data['drink_selected']:
-            message += "BEBIDAS:\n"
-            for drink_type, quantity in data['drink_selected'].items():
-                if quantity > 0:
-                    message += f"{drink_type}: {quantity}\n\n"
+            drinks_items = [f"{drink_type}: {quantity}" for drink_type, quantity in data['drink_selected'].items() if quantity > 0]
+            if drinks_items:
+                message += "BEBIDAS:\n" + "\n".join(drinks_items) + "\n\n"
 
         if data['extra_selected']: # Solo añadir si hay extras
             message += f"EXTRAS:\n\n{data['extra_selected']}\n\n"
