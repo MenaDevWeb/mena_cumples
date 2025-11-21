@@ -189,6 +189,26 @@ def datos_personales(name_title, child_name_value, child_age_value, date_time, t
 def seleccion_alimentos(sandwiches_text, food_options, tortilla_description):
     return rx.vstack(
         rx.text(sandwiches_text, weight="bold", margin_top="30px"),
+        rx.hstack(
+            rx.checkbox(
+                checked=FormBaseState.butter_on_sandwiches,
+                on_change=lambda new_value: FormBaseState.update_field("butter_on_sandwiches", new_value),
+                size="3"
+            ),
+            rx.text(
+                "Marcar si desea que los bocadillos lleven mantequilla",
+                style={
+                    "font_size": "16px", 
+                    "font_style": "italic",
+                    "color": "#dc2626",
+                    "font_weight": "600"
+                }
+            ),
+            align_items="center",
+            spacing="3",
+            margin_top="15px",
+            margin_bottom="10px"
+        ),
         rx.flex(radio_button_food(food_options), margin_top="20px", margin_bottom="20px"),
         rx.text(tortilla_description, size="5", weight="bold", style={"font_style":"italic"}, margin_top="30px", color_scheme="purple")
     )

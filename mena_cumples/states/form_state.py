@@ -11,6 +11,7 @@ class FormBaseState(rx.State):
     birth_date: str = ""
     birth_time: str = ""
     selected_food_option: str = ""
+    butter_on_sandwiches: bool = False
     pizza_selected: Dict[str, int] = {}
     rosca_selected: Dict[str, int] = {}
     total_pizza_rosca: int = 0
@@ -150,6 +151,12 @@ class FormBaseState(rx.State):
     def can_send(self) -> bool:
         """Valida si el formulario está listo para enviar."""
         return (
+            bool(self.child_name.strip()) and
+            bool(self.child_age.strip()) and
+            bool(self.birth_date.strip()) and
+            bool(self.birth_time.strip()) and
+            bool(self.selected_food_option.strip()) and
+            bool(self.selected_bakery_option.strip()) and
             self.total_pizza_rosca == self.max_allowed_pizza_rosca and
             self.total_drinks == self.max_allowed_drinks
         )
@@ -168,6 +175,7 @@ class FormBaseState(rx.State):
             "birth_date": self.birth_date,
             "birth_time": self.birth_time,
             "selected_food_option": self.selected_food_option,
+            "butter_on_sandwiches": self.butter_on_sandwiches,
             "pizza_selected": self.pizza_selected,
             "rosca_selected": self.rosca_selected,
             "drink_selected": self.drink_selected,
@@ -190,7 +198,13 @@ class FormBaseState(rx.State):
         if include_tortillas:
             message += "+ 2 TORTILLAS DE PATATAS INCLUIDAS\n\n"
 
-        message += f"{data['selected_food_option']}\n\n"
+        message += f"{data['selected_food_option']}\n"
+        
+        # Añadir información sobre mantequilla si está marcado
+        if data['butter_on_sandwiches']:
+            message += "Untar bocadillos con mantequilla\n"
+        
+        message += "\n"
 
         if data['pizza_selected']:
             pizzas_items = [f"{pizza_type}: {quantity}" for pizza_type, quantity in data['pizza_selected'].items() if quantity > 0]
