@@ -6,7 +6,7 @@ def radio_button_food(options: list[str]):
         options,
         size="3",
         default_value=FormBaseState.selected_food_option,
-        on_change=lambda new_value: FormBaseState.update_field("selected_food_option", new_value)
+        on_change=lambda val: FormBaseState.update_field("selected_food_option", val)
     )
 
 def radio_button_bakery(options: list[str]):
@@ -14,7 +14,7 @@ def radio_button_bakery(options: list[str]):
         options,
         style={"font_size":"20px"},
         default_value=FormBaseState.selected_bakery_option,
-        on_change=lambda new_value: FormBaseState.update_field("selected_bakery_option", new_value),
+        on_change=FormBaseState.update_bakery_option,
         size="3"
     )
 

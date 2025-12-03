@@ -65,7 +65,7 @@ def main_title() -> rx.Component:
     )
 
 
-def _create_pack_card(title: str, image_src: str, on_click_action: str | None = None) -> rx.Component:
+def _create_pack_card(title: str, price_2025: int, price_2026: int, num_people: int, image_src: str, on_click_action: str | None = None) -> rx.Component:
     button_or_link = rx.link(
         rx.button(
             rx.text("Selecciona"),
@@ -96,16 +96,37 @@ def _create_pack_card(title: str, image_src: str, on_click_action: str | None = 
                 object_fit="cover",
                 border_radius="10px 10px 0 0" # Redondea solo las esquinas superiores de la imagen
             ),
+            # Título del pack
             rx.text(
-                title,
+                f"PACK DE {num_people} PERSONAS",
                 weight="bold",
                 align="center",
-                padding_y=Size.SMALL.value,
-                padding_x=Size.SMALL.value,
-                size="4" # Ajusta el tamaño del texto si es necesario
+                size="5",
+                margin_top="0.5rem",
             ),
-            button_or_link, # Usar la Opción A o la Opción B de arriba
-            spacing="1",
+            # Precios
+            rx.vstack(
+                # Precio 2025
+                rx.hstack(
+                    rx.text("2025:", weight="medium", size="3", color="gray"),
+                    rx.text(f"{price_2025}€", weight="bold", size="4", color="purple"),
+                    spacing="2",
+                    align="center",
+                ),
+                # Precio 2026
+                rx.hstack(
+                    rx.text("2026:", weight="medium", size="3", color="gray"),
+                    rx.text(f"{price_2026}€", weight="bold", size="4", color="indigo"),
+                    rx.badge("+20€", color_scheme="red", size="1"),
+                    spacing="2",
+                    align="center",
+                ),
+                spacing="1",
+                align="center",
+                padding_y="0.5rem",
+            ),
+            button_or_link,
+            spacing="2",
             align="center",
             width="100%"
         ),
@@ -117,15 +138,29 @@ def _create_pack_card(title: str, image_src: str, on_click_action: str | None = 
     )
 
 
+
 def pack_options_grid() -> rx.Component:
     """Crea el grid de cards para los packs."""
     return rx.center(
         rx.vstack(
             main_title(),
+            # Nota informativa sobre precios
+            rx.callout(
+                "Los precios mostrados son para cumpleaños en 2025. Para reservas en 2026, el precio será 20€ superior.",
+                icon="info",
+                color_scheme="blue",
+                size="2",
+                width="100%",
+                max_width="1200px",
+                margin_bottom="1rem",
+            ),
             rx.grid(
                 *[
                     _create_pack_card(
                         title=pack["title"],
+                        price_2025=pack["price_2025"],
+                        price_2026=pack["price_2026"],
+                        num_people=pack["num_people"],
                         image_src=pack["image_src"],
                         on_click_action=pack["on_click"]
                     )
@@ -146,22 +181,34 @@ def pack_options_grid() -> rx.Component:
 PACK_OPTIONS_DATA = [
     {
         "title": "PACK DE 90€---PARA 15 PERSONAS",
-        "image_src": "/pack_15_image.webp", # Necesitarás crear esta imagen
+        "price_2025": 90,
+        "price_2026": 110,
+        "num_people": 15,
+        "image_src": "/pack_15_image.webp",
         "on_click": Routes.PACK_15_PAX.value,
     },
     {
         "title": "PACK DE 120€---PARA 20 PERSONAS",
-        "image_src": "/pack_20_image.webp", # Necesitarás crear esta imagen
+        "price_2025": 120,
+        "price_2026": 140,
+        "num_people": 20,
+        "image_src": "/pack_20_image.webp",
         "on_click":Routes.PACK_20_PAX.value,
     },
     {
         "title": "PACK DE 150€---PARA 25 PERSONAS",
-        "image_src": "/pack_25_image.webp", # Necesitarás crear esta imagen
+        "price_2025": 150,
+        "price_2026": 170,
+        "num_people": 25,
+        "image_src": "/pack_25_image.webp",
         "on_click": Routes.PACK_25_PAX.value,
     },
     {
         "title": "PACK DE 180€---PARA 30 PERSONAS",
-        "image_src": "/pack_30_image.jpeg", # Necesitarás crear esta imagen
+        "price_2025": 180,
+        "price_2026": 200,
+        "num_people": 30,
+        "image_src": "/pack_30_image.jpeg",
         "on_click": Routes.PACK_30_PAX.value,
     },
 ]

@@ -66,7 +66,7 @@ def pack_form(
                         rx.el.img(src=image_url, class_name="w-full h-auto rounded-md mb-4 max-h-60 object-cover"),
                         rx.el.div()
                     ),
-                    rx.heading(pack_type,size="8",align="center", width="100%", margin_top="20px"),
+                    rx.heading(FormBaseState.pack_title_with_price, size="8", align="center", width="100%", margin_top="20px"),
                     rx.text(pack_description, margin_top="2em", color_scheme="purple", size="4", weight="bold", style={"font_style": "italic"}),
                     class_name="p-4 rounded-lg shadow mb-4",
                     style={"backgroundColor": "#f5cade"}
@@ -95,7 +95,13 @@ def pack_form(
                     class_name="p-4 rounded-lg shadow mb-4",
                     style={"backgroundColor": "#dcd4ee"}
                 ),
-                # Card: Extras y Observaciones
+                # Card: Extras de Comida y Bebida (NUEVO)
+                rx.el.div(
+                    seleccion_extras(FormBaseState.extra_pizza_selected, FormBaseState.extra_rosca_selected, FormBaseState.extra_drink_selected, FormBaseState.candy_count),
+                    class_name="p-4 rounded-lg shadow mb-4",
+                    style={"backgroundColor": "#fce7f3"} # Un color ligeramente diferente para destacar
+                ),
+                # Card: Otros Extras y Observaciones
                 rx.el.div(
                     extras_y_observaciones(extra_title, extra_description, extra_selected, bakery_title,bakery_options, observation_title, observation_selected_value),
                     class_name="p-4 rounded-lg shadow mb-4",
@@ -338,7 +344,8 @@ def seleccion_bebidas(drink_title, drink_description, drink_selected_values, max
                 *drink_inputs_col2,
                 align_items="start"
             ),
-            justify_content="space-between"
+            justify_content="space-between",
+            margin_top="20px"
         ),
         margin_top="20px"
     )
@@ -347,17 +354,37 @@ def seleccion_bebidas(drink_title, drink_description, drink_selected_values, max
 # Función para extras y observaciones
 def extras_y_observaciones(extra_title, extra_description, extra_selected, bakery_title, bakery_options, observation_title, observation_selected_value):
     return rx.vstack(
-        rx.text(extra_title, weight="bold", margin_top="30px"),
-        rx.text(extra_description, style={"font_style":"italic"}),
-        rx.spacer(margin_top="20px"),
-        rx.input(
-            placeholder="Extras", 
-            value=extra_selected,
-            on_change=lambda new_value: FormBaseState.update_field("extra_selected", new_value),
-            style={"width": "100%", "height": "50px"},
-        ),
+        # Eliminado campo de texto de extras antiguo
         rx.text(bakery_title, weight="bold", margin_top="30px"),
         rx.flex(radio_button_bakery(bakery_options), margin_top="20px"),
+        
+        # Input de peso para Tarta Panadería
+        rx.cond(
+            FormBaseState.selected_bakery_option.lower().contains("tarta panadería"),
+            rx.hstack(
+                rx.text("Peso aproximado (kg):", weight="medium"),
+                rx.input(
+                    value=FormBaseState.bakery_weight.to_string(),
+                    on_change=FormBaseState.update_bakery_weight,
+                    type="number",
+                    width="100px",
+                    min="0",
+                    step="0.1"
+                ),
+                align_items="center",
+                spacing="2",
+                margin_top="10px"
+            )
+        ),
+
+        # Precio de la repostería
+        rx.hstack(
+            rx.text("Precio Repostería:", weight="bold"),
+            rx.text(f"{FormBaseState.bakery_price:.2f}€", weight="bold", color="#BE185D"),
+            margin_top="10px",
+            spacing="2"
+        ),
+
         rx.text(observation_title, weight="bold", margin_top="30px"),
         rx.text_area(
             placeholder="Observaciones", 
@@ -399,4 +426,221 @@ def select_pack_component():
             "Máximo permitido: {FormBaseState.max_allowed_pizza_rosca}",
             key="max_allowed_text",
         ),
+    )
+
+# Función para la selección de extras (comida y bebida)
+def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_selected, candy_count):
+    pizza_types = ["margarita", "prosciutto", "salchicha", "pepperoni", "atún"]
+    rosca_types = ["mixta", "atún", "lomo", "catalana"]
+    drink_types_col1 = ["Cola", "Cola Zero", "Cola Zero Zero", "Fanta Naranja", "Fanta Limón"]
+    drink_types_col2 = ["Zumo de Piña", "Zumo de Melocotón", "Batido de Chocolate", "Batido de Fresa", "Botella de Agua"]
+
+    # Ensure dictionaries
+    if not isinstance(extra_pizza_selected, dict):
+        extra_pizza_selected = {pizza_type: 0 for pizza_type in pizza_types}
+    if not isinstance(extra_rosca_selected, dict):
+        extra_rosca_selected = {rosca_type: 0 for rosca_type in rosca_types}
+    if not isinstance(extra_drink_selected, dict):
+        extra_drink_selected = {drink_type: 0 for drink_type in drink_types_col1 + drink_types_col2}
+
+    pizza_inputs = [
+        rx.hstack(
+            rx.input(
+                placeholder="0",
+                value=str(extra_pizza_selected.get(pizza_type, 0)),
+                on_change=lambda new_value, pizza_type=pizza_type: FormBaseState.update_extra_pizza_selected(pizza_type, new_value),
+                max_length=2,
+                type="number",
+                min=0,
+                style={"width": "50px", "height": "40px", "font_size": "16px"},
+            ),
+            rx.vstack(
+                rx.text(pizza_type, style={"font_size": "16px", "font_style": "italic"}),
+                rx.text(
+                    rx.cond(
+                        pizza_type == "margarita",
+                        f"{FormBaseState.price_extra_pizza_margarita}€",
+                        f"{FormBaseState.price_extra_pizza_general}€"
+                    ), 
+                    style={"font_size": "12px", "color": "#666"}
+                ),
+                spacing="0",
+                align_items="start"
+            ),
+            align_items="center",
+            margin_bottom="10px"
+        ) for pizza_type in pizza_types
+    ]
+
+    rosca_inputs = [
+        rx.hstack(
+            rx.input(
+                placeholder="0",
+                value=str(extra_rosca_selected.get(rosca_type, 0)),
+                on_change=lambda new_value, rosca_type=rosca_type: FormBaseState.update_extra_rosca_selected(rosca_type, new_value),
+                max_length=2,
+                type="number",
+                min=0,
+                style={"width": "50px", "height": "40px", "font_size": "16px"},
+            ),
+            rx.vstack(
+                rx.text(rosca_type, style={"font_size": "16px", "font_style": "italic"}),
+                rx.text(f"{FormBaseState.price_extra_pizza_general}€", style={"font_size": "12px", "color": "#666"}),
+                spacing="0",
+                align_items="start"
+            ),
+            align_items="center",
+            margin_bottom="10px"
+        ) for rosca_type in rosca_types
+    ]
+
+    drink_inputs_col1 = [
+        rx.hstack(
+            rx.input(
+                placeholder="0",
+                value=str(extra_drink_selected.get(drink_type, 0)),
+                on_change=lambda new_value, drink_type=drink_type: FormBaseState.update_extra_drink_selected(drink_type, new_value),
+                max_length=2,
+                type="number",
+                min=0,
+                style={"width": "50px", "height": "40px", "font_size": "16px"},
+            ),
+            rx.vstack(
+                rx.text(drink_type, style={"font_size": "16px", "font_style": "italic"}),
+                rx.text(f"{FormBaseState.price_extra_drink_general}€", style={"font_size": "12px", "color": "#666"}),
+                spacing="0",
+                align_items="start"
+            ),
+            align_items="center",
+            margin_bottom="10px"
+        ) for drink_type in drink_types_col1
+    ]
+
+    drink_inputs_col2 = [
+        rx.hstack(
+            rx.input(
+                placeholder="0",
+                value=str(extra_drink_selected.get(drink_type, 0)),
+                on_change=lambda new_value, drink_type=drink_type: FormBaseState.update_extra_drink_selected(drink_type, new_value),
+                max_length=2,
+                type="number",
+                min=0,
+                style={"width": "50px", "height": "40px", "font_size": "16px"},
+            ),
+            rx.vstack(
+                rx.text(drink_type, style={"font_size": "16px", "font_style": "italic"}),
+                rx.text(
+                    rx.cond(
+                        rx.Var.create("agua").to_string().lower().contains("agua"), # Simplificación para detectar agua
+                        f"{FormBaseState.price_extra_water}€" if "agua" in drink_type.lower() else f"{FormBaseState.price_extra_drink_general}€", # Lógica condicional simple
+                        f"{FormBaseState.price_extra_drink_general}€"
+                    ),
+                    style={"font_size": "12px", "color": "#666"}
+                ),
+                spacing="0",
+                align_items="start"
+            ),
+            align_items="center",
+            margin_bottom="10px"
+        ) for drink_type in drink_types_col2
+    ]
+
+    return rx.vstack(
+        rx.text("AÑADIR EXTRAS", weight="bold", color="#BE185D", margin_top="30px", size="5"),
+        rx.text("Selecciona las unidades adicionales que desees añadir a tu pedido.", style={"font_style": "italic", "font_size": "14px"}),
+        
+        # Sección Comida
+        rx.text("Pizzas y Roscas", weight="bold", color="#BE185D", margin_top="20px"),
+        rx.hstack(
+            rx.vstack(
+                rx.text("Pizzas", weight="bold"),
+                *pizza_inputs,
+                align_items="start",
+                margin_right="20px"
+            ),
+            rx.vstack(
+                rx.text("Roscas", weight="bold"),
+                *rosca_inputs,
+                align_items="start"
+            ),
+            justify_content="space-between",
+            margin_top="10px"
+        ),
+        
+        rx.divider(margin_y="15px"),
+        
+        # Sección Bebidas
+        rx.text("Bebidas", weight="bold", color="#BE185D", margin_top="10px"),
+        rx.text("(tenga en cuenta que los cafés, bebidas alcohólicas etc. van aparte)", style={"font_style": "italic", "font_size": "12px"}),
+        rx.hstack(
+            rx.vstack(
+                rx.text("Refrescos", weight="bold"),
+                *drink_inputs_col1,
+                align_items="start",
+                margin_right="20px"
+            ),
+            rx.vstack(
+                rx.text("Zumos, batidos, agua", weight="bold"),
+                *drink_inputs_col2,
+                align_items="start"
+            ),
+            justify_content="space-between",
+            margin_top="15px"
+        ),
+
+        rx.divider(margin_y="15px"),
+
+        # Sección Chuches
+        rx.text("Chuches", weight="bold", color="#BE185D", margin_top="10px"),
+        rx.hstack(
+            rx.input(
+                placeholder="0",
+                value=candy_count.to_string(),
+                on_change=FormBaseState.update_candy_count,
+                max_length=2,
+                type="number",
+                min=0,
+                style={"width": "50px", "height": "40px", "font_size": "16px"},
+            ),
+            rx.vstack(
+                rx.text("Plato de Chuches", style={"font_size": "16px", "font_style": "italic"}),
+                rx.text(f"{FormBaseState.price_candy}€", style={"font_size": "12px", "color": "#666"}),
+                spacing="0",
+                align_items="start"
+            ),
+            align_items="center",
+            margin_bottom="10px"
+        ),
+        
+        rx.divider(margin_y="15px"),
+        
+        # Totales
+        rx.vstack(
+            rx.hstack(
+                rx.text("Total Extras Comida:", weight="medium"),
+                rx.text(f"{FormBaseState.total_extra_food_price:.2f}€", weight="bold"),
+                justify_content="space-between",
+                width="100%"
+            ),
+            rx.hstack(
+                rx.text("Total Extras Bebida:", weight="medium"),
+                rx.text(f"{FormBaseState.total_extra_drink_price:.2f}€", weight="bold"),
+                justify_content="space-between",
+                width="100%"
+            ),
+            rx.hstack(
+                rx.text("Total Extras Chuches:", weight="medium"),
+                rx.text(f"{FormBaseState.total_candy_price:.2f}€", weight="bold"),
+                justify_content="space-between",
+                width="100%"
+            ),
+            rx.divider(margin_y="5px"),
+            rx.hstack(
+                rx.text("TOTAL EXTRAS:", weight="bold", size="4"),
+                rx.text(f"{FormBaseState.total_extra_food_price + FormBaseState.total_extra_drink_price + FormBaseState.total_candy_price:.2f}€", weight="bold", size="5", color="#BE185D"),
+                justify_content="space-between",
+                width="100%"
+            ),
+            width="100%",
+        )
     )
