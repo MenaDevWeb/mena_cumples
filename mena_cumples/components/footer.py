@@ -5,7 +5,7 @@ def footer():
     return rx.box(
         # Copyright text (centered by the parent box's text_align)
         create_colored_text(
-            text="© 2025 Developed by Gabriel Visiedo."
+            text="© 2026 Developed by Gabriel Visiedo."
         ),
         rx.flex(
             # All icons/logos are now direct children of this flex container

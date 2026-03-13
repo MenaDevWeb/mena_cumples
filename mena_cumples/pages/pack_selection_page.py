@@ -65,22 +65,21 @@ def main_title() -> rx.Component:
     )
 
 
-def _create_pack_card(title: str, price_2025: int, price_2026: int, num_people: int, image_src: str, on_click_action: str | None = None) -> rx.Component:
+def _create_pack_card(title: str, price: int, num_people: int, image_src: str, on_click_action: str | None = None) -> rx.Component:
     button_or_link = rx.link(
         rx.button(
             rx.text("Selecciona"),
             variant="surface",
             color_scheme="plum",
-            width="100%", # El botón ocupa todo el ancho del enlace
+            width="100%", 
         ),
-        href=on_click_action if on_click_action else "#", # El enlace maneja la navegación
+        href=on_click_action if on_click_action else "#",
         is_external=False,
-        width="90%", # Ancho del área clickeable del enlace
+        width="90%",
         margin_top=Size.SMALL.value,
         margin_bottom=Size.SMALL.value,
-        style={"text_decoration": "none"}, # Para que no parezca un enlace subrayado tradicional
-        disabled=not on_click_action, # rx.link no tiene 'disabled', esto es conceptual
-        ) if on_click_action else rx.button( # Botón deshabilitado si no hay acción
+        style={"text_decoration": "none"},
+        ) if on_click_action else rx.button(
         rx.text("Selecciona"),
         variant="surface", color_scheme="plum", width="90%",
         margin_top=Size.SMALL.value, margin_bottom=Size.SMALL.value,
@@ -104,23 +103,9 @@ def _create_pack_card(title: str, price_2025: int, price_2026: int, num_people: 
                 size="5",
                 margin_top="0.5rem",
             ),
-            # Precios
+            # Precio
             rx.vstack(
-                # Precio 2025
-                rx.hstack(
-                    rx.text("2025:", weight="medium", size="3", color="gray"),
-                    rx.text(f"{price_2025}€", weight="bold", size="4", color="purple"),
-                    spacing="2",
-                    align="center",
-                ),
-                # Precio 2026
-                rx.hstack(
-                    rx.text("2026:", weight="medium", size="3", color="gray"),
-                    rx.text(f"{price_2026}€", weight="bold", size="4", color="indigo"),
-                    rx.badge("+20€", color_scheme="red", size="1"),
-                    spacing="2",
-                    align="center",
-                ),
+                rx.text(f"{price}€", weight="bold", size="6", color="purple"),
                 spacing="1",
                 align="center",
                 padding_y="0.5rem",
@@ -144,22 +129,11 @@ def pack_options_grid() -> rx.Component:
     return rx.center(
         rx.vstack(
             main_title(),
-            # Nota informativa sobre precios
-            rx.callout(
-                "Los precios mostrados son para cumpleaños en 2025. Para reservas en 2026, el precio será 20€ superior.",
-                icon="info",
-                color_scheme="blue",
-                size="2",
-                width="100%",
-                max_width="1200px",
-                margin_bottom="1rem",
-            ),
             rx.grid(
                 *[
                     _create_pack_card(
                         title=pack["title"],
-                        price_2025=pack["price_2025"],
-                        price_2026=pack["price_2026"],
+                        price=pack["price"],
                         num_people=pack["num_people"],
                         image_src=pack["image_src"],
                         on_click_action=pack["on_click"]
@@ -180,33 +154,29 @@ def pack_options_grid() -> rx.Component:
 # Datos de los packs
 PACK_OPTIONS_DATA = [
     {
-        "title": "PACK DE 90€---PARA 15 PERSONAS",
-        "price_2025": 90,
-        "price_2026": 110,
+        "title": "PACK DE 110€---PARA 15 PERSONAS",
+        "price": 110,
         "num_people": 15,
         "image_src": "/pack_15_image.webp",
         "on_click": Routes.PACK_15_PAX.value,
     },
     {
-        "title": "PACK DE 120€---PARA 20 PERSONAS",
-        "price_2025": 120,
-        "price_2026": 140,
+        "title": "PACK DE 140€---PARA 20 PERSONAS",
+        "price": 140,
         "num_people": 20,
         "image_src": "/pack_20_image.webp",
         "on_click":Routes.PACK_20_PAX.value,
     },
     {
-        "title": "PACK DE 150€---PARA 25 PERSONAS",
-        "price_2025": 150,
-        "price_2026": 170,
+        "title": "PACK DE 170€---PARA 25 PERSONAS",
+        "price": 170,
         "num_people": 25,
         "image_src": "/pack_25_image.webp",
         "on_click": Routes.PACK_25_PAX.value,
     },
     {
-        "title": "PACK DE 180€---PARA 30 PERSONAS",
-        "price_2025": 180,
-        "price_2026": 200,
+        "title": "PACK DE 200€---PARA 30 PERSONAS",
+        "price": 200,
         "num_people": 30,
         "image_src": "/pack_30_image.jpeg",
         "on_click": Routes.PACK_30_PAX.value,

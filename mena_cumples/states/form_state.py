@@ -30,16 +30,13 @@ class FormBaseState(rx.State):
     max_allowed_drinks: int = 4
     selected_pack: str = ""
 
-    # Precios base (año 2025)
+    # Precios base (año 2026)
     PACK_BASE_PRICES = {
-        "Pack_15": 90,
-        "Pack_20": 120,
-        "Pack_25": 150,
-        "Pack_30": 180,
+        "Pack_15": 110,
+        "Pack_20": 140,
+        "Pack_25": 170,
+        "Pack_30": 200,
     }
-    
-    # Incremento de precio para 2026 en adelante
-    PRICE_INCREASE_2026 = 20
 
     # Límites por pack
     PACK_PIZZA_ROSCA_LIMITS = {
@@ -70,22 +67,8 @@ class FormBaseState(rx.State):
 
     @rx.var
     def get_pack_price(self) -> int:
-        """Calcula el precio del pack según el año de la fecha seleccionada."""
-        if not self.selected_pack or not self.birth_date:
-            return self.PACK_BASE_PRICES.get(self.selected_pack, 0)
-        
-        try:
-            # Extraer el año de la fecha (formato: YYYY-MM-DD)
-            year = int(self.birth_date.split("-")[0])
-            base_price = self.PACK_BASE_PRICES.get(self.selected_pack, 0)
-            
-            # Si es 2026 o posterior, aplicar incremento
-            if year >= 2026:
-                return base_price + self.PRICE_INCREASE_2026
-            return base_price
-        except (ValueError, IndexError):
-            # Si hay error al parsear la fecha, devolver precio base
-            return self.PACK_BASE_PRICES.get(self.selected_pack, 0)
+        """Devuelve el precio del pack."""
+        return self.PACK_BASE_PRICES.get(self.selected_pack, 0)
 
     @rx.var
     def pack_title_with_price(self) -> str:
@@ -168,18 +151,18 @@ class FormBaseState(rx.State):
     total_extra_drink_price: float = 0.0
     total_candy_price: float = 0.0
 
-    # Variables computadas para precios unitarios dinámicos
+    # Precios unitarios
     @rx.var
     def price_extra_pizza_margarita(self) -> float:
-        return 6.50 if self.is_2026_or_later else 6.00
+        return 6.50
 
     @rx.var
     def price_extra_pizza_general(self) -> float:
-        return 7.50 if self.is_2026_or_later else 6.00
+        return 7.50
 
     @rx.var
     def price_extra_drink_general(self) -> float:
-        return 4.00 if self.is_2026_or_later else 3.50
+        return 4.00
     
     @rx.var
     def price_extra_water(self) -> float:
@@ -189,16 +172,6 @@ class FormBaseState(rx.State):
     def price_candy(self) -> float:
         return 2.00 # Precio constante
 
-    @rx.var
-    def is_2026_or_later(self) -> bool:
-        """Determina si la fecha seleccionada es 2026 o posterior."""
-        if not self.birth_date:
-            return False
-        try:
-            year = int(self.birth_date.split("-")[0])
-            return year >= 2026
-        except (ValueError, IndexError):
-            return False
 
     @rx.event
     def update_extra_pizza_selected(self, pizza_type: str, value: str):

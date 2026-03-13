@@ -32,16 +32,6 @@ def packs_information():
                     align_items="center",
                     # margin_top ya no es necesario aquí si el vstack tiene padding o spacing
                 ),
-                # Callout informativo sobre precios
-                rx.callout(
-                    "📅 Precios 2025. Para reservas en 2026, todos los packs tienen un incremento de 20€.",
-                    icon="info",
-                    color_scheme="blue",
-                    size="2",
-                    width="100%",
-                    max_width="800px",
-                    margin_bottom="2rem",
-                ),
                 # Pack para 15 Personas
                 rx.hstack(
                     rx.box(
@@ -52,16 +42,7 @@ def packs_information():
                     ),
                     rx.box(
                         rx.heading("Pack para 15 Personas", font_size="1.5rem", color="#8B5CF6", margin_bottom="0.3rem"),
-                        rx.hstack(
-                            rx.text("2025:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("90€", weight="bold", color="#8B5CF6", font_size="1.2rem"),
-                            rx.text("•", color="#6B7280", margin_x="0.5rem"),
-                            rx.text("2026:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("110€", weight="bold", color="#4F46E5", font_size="1.2rem"),
-                            rx.badge("+20€", color_scheme="red", size="1"),
-                            spacing="2",
-                            margin_bottom="0.8rem",
-                        ),
+                        rx.text("110€", weight="bold", color="#8B5CF6", font_size="1.5rem", margin_bottom="0.8rem"),
                         rx.text("• 30 Bocadillos ó 15 Sandwiches mixtos (o mitad y mitad)", color="black", margin_bottom="0.5rem"),
                         rx.text("• Platos: patatas, palomitas, bollería/galletas y frutos secos.", color="black", margin_bottom="0.5rem"),
                         rx.text("• A elegir o combinar: 3 Pizzas ó 3 roscas.", color="black", margin_bottom="0.5rem"),
@@ -80,16 +61,7 @@ def packs_information():
                     ),
                     rx.box(
                         rx.heading("Pack para 20 Personas", font_size="1.5rem", color="#8B5CF6", margin_bottom="0.3rem"),
-                        rx.hstack(
-                            rx.text("2025:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("120€", weight="bold", color="#8B5CF6", font_size="1.2rem"),
-                            rx.text("•", color="#6B7280", margin_x="0.5rem"),
-                            rx.text("2026:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("140€", weight="bold", color="#4F46E5", font_size="1.2rem"),
-                            rx.badge("+20€", color_scheme="red", size="1"),
-                            spacing="2",
-                            margin_bottom="0.8rem",
-                        ),
+                        rx.text("140€", weight="bold", color="#8B5CF6", font_size="1.5rem", margin_bottom="0.8rem"),
                         rx.text("• 40 Bocadillos ó 20 Sandwiches mixtos (o mitad y mitad)", color="black", margin_bottom="0.5rem"),
                         rx.text("• Platos: patatas, palomitas, bollería/galletas y frutos secos.", color="black", margin_bottom="0.5rem"),
                         rx.text("• A elegir o combinar: 4 Pizzas ó 4 roscas.", color="black", margin_bottom="0.5rem"),
@@ -108,16 +80,7 @@ def packs_information():
                     ),
                     rx.box(
                         rx.heading("Pack para 25 Personas", font_size="1.5rem", color="#8B5CF6", margin_bottom="0.3rem"),
-                        rx.hstack(
-                            rx.text("2025:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("150€", weight="bold", color="#8B5CF6", font_size="1.2rem"),
-                            rx.text("•", color="#6B7280", margin_x="0.5rem"),
-                            rx.text("2026:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("170€", weight="bold", color="#4F46E5", font_size="1.2rem"),
-                            rx.badge("+20€", color_scheme="red", size="1"),
-                            spacing="2",
-                            margin_bottom="0.8rem",
-                        ),
+                        rx.text("170€", weight="bold", color="#8B5CF6", font_size="1.5rem", margin_bottom="0.8rem"),
                         rx.text("• 50 Bocadillos ó 25 Sandwiches mixtos (o mitad y mitad)", color="black", margin_bottom="0.5rem"),
                         rx.text("• Platos: patatas, palomitas, bollería/galletas y frutos secos", color="black", margin_bottom="0.5rem"),
                         rx.text("• A elegir o combinar: 4 Pizzas ó 4 roscas + 2 Tortillas de patatas", color="black", margin_bottom="0.5rem"),
@@ -136,16 +99,7 @@ def packs_information():
                     ),
                     rx.box(
                         rx.heading("Pack para 30 Personas", font_size="1.5rem", color="#8B5CF6", margin_bottom="0.3rem"),
-                        rx.hstack(
-                            rx.text("2025:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("180€", weight="bold", color="#8B5CF6", font_size="1.2rem"),
-                            rx.text("•", color="#6B7280", margin_x="0.5rem"),
-                            rx.text("2026:", weight="bold", color="#6B7280", font_size="1.1rem"),
-                            rx.text("200€", weight="bold", color="#4F46E5", font_size="1.2rem"),
-                            rx.badge("+20€", color_scheme="red", size="1"),
-                            spacing="2",
-                            margin_bottom="0.8rem",
-                        ),
+                        rx.text("200€", weight="bold", color="#8B5CF6", font_size="1.5rem", margin_bottom="0.8rem"),
                         rx.text("• 60 Bocadillos ó 30 Sandwiches mixtos (o mitad y mitad)", color="black", margin_bottom="0.5rem"),
                         rx.text("• Platos: patatas, palomitas, bollería/galletas y frutos secos.", color="black", margin_bottom="0.5rem"),
                         rx.text("• A elegir o combinar: 5 Pizzas ó 5 roscas + 2 Tortillas de patatas.", color="black", margin_bottom="0.5rem"),
@@ -160,9 +114,9 @@ def packs_information():
                 # Extras Section
                 rx.box(
                     rx.heading("Extras", font_size="2rem", color="#BE185D", margin_bottom="1rem"),
-                    rx.text("• Pizzas o roscas extras: 6€.", margin_bottom="0.5rem"),
+                    rx.text("• Pizzas o roscas extras: 7,50€.", margin_bottom="0.5rem"),
                     rx.text("• Plato de chuches: 2€ cada uno.", margin_bottom="0.5rem"),
-                    rx.text("• Botellas de refresco extras: 3,50€.", color="black", margin_bottom="0.5rem"),
+                    rx.text("• Botellas de refresco extras: 4€.", color="black", margin_bottom="0.5rem"),
                     rx.text("• Botella de agua extra: 2,50€.", color="black", margin_bottom="0.5rem"),
                     rx.text("• Bizcocho de cafetería (normal, de chocolate, con o sin cobertura) para 8 a 10 pax: 10€.", color="black", margin_bottom="0.5rem"),
                     rx.text("• Tarta de galletas de cafetería: 15€.", margin_bottom="0.5rem"),
