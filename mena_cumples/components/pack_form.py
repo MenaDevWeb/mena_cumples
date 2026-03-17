@@ -95,11 +95,30 @@ def pack_form(
                     class_name="p-4 rounded-lg shadow mb-4",
                     style={"backgroundColor": "#dcd4ee"}
                 ),
-                # Card: Extras de Comida y Bebida (NUEVO)
-                rx.el.div(
-                    seleccion_extras(FormBaseState.extra_pizza_selected, FormBaseState.extra_rosca_selected, FormBaseState.extra_drink_selected, FormBaseState.candy_count),
-                    class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#fce7f3"} # Un color ligeramente diferente para destacar
+                # Checkbox para mostrar/ocultar extras - más visible
+                rx.box(
+                    rx.checkbox(
+                        " QUIERO AÑADIR EXTRAS (pizzas, roscas, bebidas extra, chuches) ",
+                        checked=FormBaseState.show_extras,
+                        on_change=FormBaseState.toggle_extras,
+                        size="3",
+                    ),
+                    width="100%",
+                    text_align="center",
+                    margin_y="15px",
+                    padding="10px",
+                    backgroundColor="#fef3c7",
+                    border_radius="10px",
+                    border="2px solid #f59e0b"
+                ),
+                # Card: Extras de Comida y Bebida - Solo mostrar si está activado
+                rx.cond(
+                    FormBaseState.show_extras,
+                    rx.el.div(
+                        seleccion_extras(FormBaseState.extra_pizza_selected, FormBaseState.extra_rosca_selected, FormBaseState.extra_drink_selected, FormBaseState.candy_count),
+                        class_name="p-4 rounded-lg shadow mb-4",
+                        style={"backgroundColor": "#fce7f3"}
+                    ),
                 ),
                 # Card: Otros Extras y Observaciones
                 rx.el.div(

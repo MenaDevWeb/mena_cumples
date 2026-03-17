@@ -143,6 +143,7 @@ class FormBaseState(rx.State):
         """Calcula el total de pizzas y roscas."""
         self.total_pizza_rosca = sum(self.pizza_selected.values()) + sum(self.rosca_selected.values())
     # Variables para Extras
+    show_extras: bool = False
     extra_pizza_selected: Dict[str, int] = {}
     extra_rosca_selected: Dict[str, int] = {}
     extra_drink_selected: Dict[str, int] = {}
@@ -172,6 +173,17 @@ class FormBaseState(rx.State):
     def price_candy(self) -> float:
         return 2.00 # Precio constante
 
+
+    @rx.event
+    def toggle_extras(self, value: bool):
+        """Muestra u oculta la sección de extras y resetea los valores."""
+        self.show_extras = not self.show_extras if not isinstance(value, bool) else value
+        if not self.show_extras:
+            self.extra_pizza_selected = {}
+            self.extra_rosca_selected = {}
+            self.extra_drink_selected = {}
+            self.candy_count = 0
+            self.calculate_extra_prices()
 
     @rx.event
     def update_extra_pizza_selected(self, pizza_type: str, value: str):
@@ -342,6 +354,7 @@ class FormBaseState(rx.State):
             "rosca_selected": self.rosca_selected,
             "drink_selected": self.drink_selected,
             "extra_selected": self.extra_selected,
+            "show_extras": self.show_extras,
             "extra_pizza_selected": self.extra_pizza_selected,
             "extra_rosca_selected": self.extra_rosca_selected,
             "extra_drink_selected": self.extra_drink_selected,

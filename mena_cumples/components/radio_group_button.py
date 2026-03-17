@@ -15,8 +15,7 @@ def radio_button_bakery(options: list[str]):
         options,
         direction="column",
         style={"font_size":"20px"},
-        default_value=FormBaseState.selected_bakery_option,
-        on_change=lambda new_value: FormBaseState.update_field("selected_bakery_option", new_value),
+        on_change=FormBaseState.update_bakery_option,
         size="3"
     )
 
