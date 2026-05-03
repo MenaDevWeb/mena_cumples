@@ -126,6 +126,39 @@ def pack_form(
                     class_name="p-4 rounded-lg shadow mb-4",
                     style={"backgroundColor": "#dcd4ee"}
                 ),
+                # Aviso visual cuando faltan elementos por seleccion
+                rx.cond(
+                    ~FormBaseState.can_send,
+                    rx.el.div(
+                        rx.el.p(
+                            "Falta",
+                            rx.cond(
+                                FormBaseState.total_missing == 1,
+                                rx.fragment(" 1 elemento "),
+                                rx.fragment(f" {FormBaseState.total_missing} elementos ")
+                            ),
+                            "por seleccionar: ",
+                            rx.cond(
+                                FormBaseState.missing_pizza_rosca > 0,
+                                rx.el.span(
+                                    f"{FormBaseState.missing_pizza_rosca} pizza/rosca ",
+                                    class_name="text-orange-600 font-medium"
+                                ),
+                                rx.fragment()
+                            ),
+                            rx.cond(
+                                FormBaseState.missing_drinks > 0,
+                                rx.el.span(
+                                    f"{FormBaseState.missing_drinks} bebida",
+                                    class_name="text-orange-600 font-medium"
+                                ),
+                                rx.fragment()
+                            ),
+                        ),
+                        class_name="mt-6 p-3 bg-orange-100 border border-orange-400 text-orange-800 rounded-lg text-center"
+                    ),
+                    rx.fragment()
+                ),
                 # Botón de envío
                 rx.el.button(
                     "ENVIAR",

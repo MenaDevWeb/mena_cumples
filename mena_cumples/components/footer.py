@@ -9,12 +9,12 @@ def footer():
         ),
         rx.flex(
             # All icons/logos are now direct children of this flex container
-            create_social_link(
-                icon_name="facebook",
+            create_linked_icon(
+                icon_src="/facebook.svg",
                 href="https://www.facebook.com/p/Hotel-Mena-Plaza-Nerja-100079174651992/"
             ),
-            create_social_link(
-                icon_name="instagram",
+            create_linked_icon(
+                icon_src="/instagram.svg",
                 href="https://www.instagram.com/menaplaza/?hl=es"
             ),
             create_linked_image(
@@ -54,19 +54,20 @@ def create_colored_text(text):
     return rx.text(text, color="#7C3AED")
 
 
-def create_social_link(icon_name,href):
-    """Create a styled link with a Lucide icon for social media."""
+def create_linked_icon(icon_src: str, href: str) -> rx.Component:
+    """Create a styled link with an icon image."""
     return rx.el.a(
-        rx.icon(
-            tag=icon_name,
-            font_family="LucideIcons",
-            font_size="1.5rem",
-            color="#7C3AED",
+        rx.image(
+            src=icon_src,
+            alt="Social icon",
+            width="25px",
+            height="auto",
+            transition="opacity 300ms ease-in-out",
+            _hover={"opacity": 0.8},
         ),
         href=href,
-        transition_duration="300ms",
-        _hover={"color": "#5B21B6"},
-    )  
+    )
+
 
 def create_linked_image(src: str, href: str, alt: str = "") -> rx.Component:
     """Create a styled link with an image."""

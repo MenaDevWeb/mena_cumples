@@ -63,6 +63,9 @@ class FormBaseState(rx.State):
         self.drink_selected.clear()
         self.total_pizza_rosca = 0
         self.total_drinks = 0
+        self.selected_bakery_option = ""
+        self.bakery_price = 0.0
+        self.bakery_weight = 1.0
         self.update_trigger += 1
 
     @rx.var
@@ -334,6 +337,21 @@ class FormBaseState(rx.State):
             self.total_pizza_rosca == self.max_allowed_pizza_rosca and
             self.total_drinks == self.max_allowed_drinks
         )
+
+    @rx.var
+    def missing_pizza_rosca(self) -> int:
+        """Devuelve la cantidad faltante de pizzas/roscas."""
+        return max(0, self.max_allowed_pizza_rosca - self.total_pizza_rosca)
+
+    @rx.var
+    def missing_drinks(self) -> int:
+        """Devuelve la cantidad faltante de bebidas."""
+        return max(0, self.max_allowed_drinks - self.total_drinks)
+
+    @rx.var
+    def total_missing(self) -> int:
+        """Devuelve la cantidad total faltante."""
+        return self.missing_pizza_rosca + self.missing_drinks
 
     @rx.event
     def set_birth_time(self, new_birth_time: str):
