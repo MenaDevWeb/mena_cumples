@@ -38,7 +38,7 @@ reflex-components-radix==0.9.1
 reflex-components-react-player==0.9.1
 reflex-components-recharts==0.9.1
 reflex-components-sonner==0.9.1
-reflex-hosting-cli==0.1.63
+reflex-hosting-cli==0.1.64
 reflex==0.9.1
 rich==14.1.0
 simple-websocket==1.1.0

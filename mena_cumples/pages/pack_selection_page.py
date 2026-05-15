@@ -1,50 +1,47 @@
 import reflex as rx
-from mena_cumples.styles.styles import Size
+from mena_cumples.styles.styles import Size, Color, FontSize, BorderRadius, Shadow, Transition
 from mena_cumples.states.state import State
-from mena_cumples.components.navbar import navbar # Importar navbar
-from mena_cumples.components.footer import footer # Importar footer
-from ..routes import Routes # Asegúrate que Routes está importado
+from mena_cumples.components.navbar import navbar
+from mena_cumples.components.footer import footer
+from ..routes import Routes
 
 
 @rx.page(route=Routes.PACK_SELECTION.value)
 def pack_selection() -> rx.Component:
     return rx.box(
-        # Navbar Container
         rx.box(
             navbar(),
-            class_name="bg-gradient-to-r from-pink-200 to-pink-300 via-purple-200", # Estilo consistente
-            padding_y="0.5rem", # Reduce el padding vertical (e.g., "0.5rem")
-            padding_x="1rem",   # Mantenemos el padding horizontal o ajústalo si es necesario
+            class_name=Color.GRADIENT_NAVBAR,
+            padding_y=Size.XS.value,
+            padding_x=Size.SMALL.value,
             width="100%",
         ),
-        # Main Content Container
         rx.box(
             rx.vstack(
                 pack_options_grid(),
-                spacing="7",  # Espacio entre main_title y pack_options_grid
+                spacing="7",
                 align="center",
                 width="100%",
-                padding_y=Size.LARGE.value, # Padding vertical arriba de main_title y abajo de pack_options_grid
+                padding_y=Size.LARGE.value,
             ),
             width="100%",
-            flex_grow="1", # Permite que este contenedor crezca y ocupe el espacio disponible
+            flex_grow="1",
             display="flex",
-            align_items="center", # Centra el vstack verticalmente si el contenido es corto
-            justify_content="center", # Centra el vstack horizontalmente (aunque width="100%" lo hace menos visible)
+            align_items="center",
+            justify_content="center",
         ),
-        # Footer Container
         rx.box(
             footer(),
-            class_name="bg-gradient-to-r from-pink-200 to-pink-300 via-purple-200", # Estilo consistente
-            padding_y="2rem",
+            class_name=Color.GRADIENT_NAVBAR,
+            padding_y=Size.MEDIUM.value,
             width="100%",
-            margin_top="auto", # Empuja el footer hacia abajo
+            margin_top="auto",
         ),
-        min_height="100vh", # Asegura que el rx.box ocupe al menos toda la altura de la ventana
-        width="100%", # Ocupa todo el ancho
+        min_height="100vh",
+        width="100%",
         display="flex",
-        flex_direction="column", # Organiza navbar, contenido y footer verticalmente
-        background_color="#EBE6EF", # Color de fondo para el área de contenido
+        flex_direction="column",
+        background_color=Color.PAGE_BG,
     )
 
 
@@ -71,7 +68,7 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
             rx.text("Selecciona"),
             variant="surface",
             color_scheme="plum",
-            width="100%", 
+            width="100%",
         ),
         href=on_click_action if on_click_action else "#",
         is_external=False,
@@ -91,11 +88,10 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
             rx.image(
                 src=image_src,
                 width="100%",
-                height="200px", # Ajusta la altura según tus imágenes
+                height="200px",
                 object_fit="cover",
-                border_radius="10px 10px 0 0" # Redondea solo las esquinas superiores de la imagen
+                border_radius="10px 10px 0 0"
             ),
-            # Título del pack
             rx.text(
                 f"PACK DE {num_people} PERSONAS",
                 weight="bold",
@@ -103,9 +99,8 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
                 size="5",
                 margin_top="0.5rem",
             ),
-            # Precio
             rx.vstack(
-                rx.text(f"{price}€", weight="bold", size="6", color="purple"),
+                rx.text(f"{price}€", weight="bold", size="6", color=Color.PURPLE),
                 spacing="1",
                 align="center",
                 padding_y="0.5rem",
@@ -115,11 +110,11 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
             align="center",
             width="100%"
         ),
-        variant="surface", # O puedes probar "outline" o "ghost"
-        border_radius="15px", # Redondeo general de la card
+        variant="surface",
+        border_radius=BorderRadius.CARD,
         width="100%",
-        _hover={"box_shadow": "0px 6px 12px rgba(0,0,0,0.15)"}, # Efecto hover sutil
-        transition="box-shadow 0.3s ease-in-out", # Transición suave para el hover
+        _hover={"box_shadow": "0px 6px 12px rgba(0,0,0,0.15)"},
+        transition=Transition.SHADOW,
     )
 
 

@@ -1,5 +1,6 @@
 import reflex as rx
 import mena_cumples.components.pack_form as pack
+from mena_cumples.styles.styles import Color
 from mena_cumples.states.form_state import FormBaseState
 from ..routes import Routes
 
@@ -26,18 +27,18 @@ def pack_15() -> rx.Component:
                 bakery_title="REPOSTERÍA",
                 bakery_options=current_bakery_options,
                 observation_title="OBSERVACIONES",
-                child_name_value="",  
-                birth_date_value="",  
+                child_name_value="",
+                birth_date_value="",
                 birth_time_value="",
                 pizza_selected_value="",
                 rosca_selected_value="",
                 drink_selected_value="",
                 extra_selected="",
-                observation_selected_value="",             
-            ),                               
+                observation_selected_value="",
+            ),
         ),
-        bg="#ece5f5",
-        on_mount=lambda: FormBaseState.select_pack("Pack_15")  # Llamar a select_pack al montar el componente
+        bg=Color.PAGE_BG_ALT,
+        on_mount=lambda: FormBaseState.select_pack("Pack_15")
     )
 
 # opciones de radio button bocadillos

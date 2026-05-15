@@ -1,6 +1,6 @@
 import reflex as rx
-from mena_cumples.styles.styles import Size
-from .radio_group_button import radio_button_food  
+from mena_cumples.styles.styles import Size, Color, FontSize
+from .radio_group_button import radio_button_food
 from .radio_group_button import radio_button_bakery
 from mena_cumples.styles.styles import style
 from mena_cumples.states.form_state import FormBaseState
@@ -45,9 +45,9 @@ def pack_form(
                     rx.el.p(FormBaseState.alert_message, class_name="text-sm text-gray-700"),
                     rx.el.div(
                         rx.el.button(
-                            "Entendido", 
+                            "Entendido",
                             on_click=FormBaseState.reset_alert,
-                            type="button",  # Sigue siendo bueno tener type="button" aquí
+                            type="button",
                             class_name="mt-5 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         ),
                         class_name="flex justify-end pt-3"
@@ -69,31 +69,31 @@ def pack_form(
                     rx.heading(FormBaseState.pack_title_with_price, size="8", align="center", width="100%", margin_top="20px"),
                     rx.text(pack_description, margin_top="2em", color_scheme="purple", size="4", weight="bold", style={"font_style": "italic"}),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#f5cade"}
+                    style={"backgroundColor": Color.CARD_PINK}
                 ),
                 # Card: Datos del Cumpleañero/a
                 rx.el.div(
                     datos_personales(name_title, child_name_value, child_age_value, date_time, time_description, birth_date_value),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#dcd4ee"}
+                    style={"backgroundColor": Color.CARD_PURPLE}
                 ),
                 # Card: Opciones de Comida
                 rx.el.div(
                     seleccion_alimentos(sandwiches_text, food_options, tortilla_description),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#dcd4ee"}
+                    style={"backgroundColor": Color.CARD_PURPLE}
                 ),
                 # Card: Pizzas y Roscas
                 rx.el.div(
                     seleccion_pizzas(pizza_title, pizza_description, pizza_selected_value, rosca_selected_value, max_allowed),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#dcd4ee"}
+                    style={"backgroundColor": Color.CARD_PURPLE}
                 ),
                 # Card: Bebidas
                 rx.el.div(
                     seleccion_bebidas(drink_title, drink_description, drink_selected_value, max_allowed),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#dcd4ee"}
+                    style={"backgroundColor": Color.CARD_PURPLE}
                 ),
                 # Checkbox para mostrar/ocultar extras - más visible
                 rx.box(
@@ -107,9 +107,9 @@ def pack_form(
                     text_align="center",
                     margin_y="15px",
                     padding="10px",
-                    backgroundColor="#fef3c7",
+                    backgroundColor=Color.CARD_EXTRAS_TOGGLE,
                     border_radius="10px",
-                    border="2px solid #f59e0b"
+                    border=f"2px solid {Color.WARNING}"
                 ),
                 # Card: Extras de Comida y Bebida - Solo mostrar si está activado
                 rx.cond(
@@ -117,14 +117,14 @@ def pack_form(
                     rx.el.div(
                         seleccion_extras(FormBaseState.extra_pizza_selected, FormBaseState.extra_rosca_selected, FormBaseState.extra_drink_selected, FormBaseState.candy_count),
                         class_name="p-4 rounded-lg shadow mb-4",
-                        style={"backgroundColor": "#fce7f3"}
+                        style={"backgroundColor": Color.CARD_EXTRAS}
                     ),
                 ),
                 # Card: Otros Extras y Observaciones
                 rx.el.div(
                     extras_y_observaciones(extra_title, extra_description, extra_selected, bakery_title,bakery_options, observation_title, observation_selected_value),
                     class_name="p-4 rounded-lg shadow mb-4",
-                    style={"backgroundColor": "#dcd4ee"}
+                    style={"backgroundColor": Color.CARD_PURPLE}
                 ),
                 # Aviso visual cuando faltan elementos por seleccion
                 rx.cond(
@@ -258,7 +258,7 @@ def seleccion_alimentos(sandwiches_text, food_options, tortilla_description):
                 style={
                     "font_size": "16px", 
                     "font_style": "italic",
-                    "color": "#dc2626",
+                    "color": Color.ERROR,
                     "font_weight": "600"
                 }
             ),
@@ -432,7 +432,7 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
         # Precio de la repostería
         rx.hstack(
             rx.text("Precio Repostería:", weight="bold"),
-            rx.text(f"{FormBaseState.bakery_price:.2f}€", weight="bold", color="#BE185D"),
+                rx.text(f"{FormBaseState.bakery_price:.2f}€", weight="bold", color=Color.PINK),
             margin_top="10px",
             spacing="2"
         ),
@@ -598,11 +598,11 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
     ]
 
     return rx.vstack(
-        rx.text("AÑADIR EXTRAS", weight="bold", color="#BE185D", margin_top="30px", size="5"),
+        rx.text("AÑADIR EXTRAS", weight="bold", color=Color.PINK, margin_top="30px", size="5"),
         rx.text("Selecciona las unidades adicionales que desees añadir a tu pedido.", style={"font_style": "italic", "font_size": "14px"}),
         
         # Sección Comida
-        rx.text("Pizzas y Roscas", weight="bold", color="#BE185D", margin_top="20px"),
+        rx.text("Pizzas y Roscas", weight="bold", color=Color.PINK, margin_top="20px"),
         rx.hstack(
             rx.vstack(
                 rx.text("Pizzas", weight="bold"),
@@ -622,7 +622,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
         rx.divider(margin_y="15px"),
         
         # Sección Bebidas
-        rx.text("Bebidas", weight="bold", color="#BE185D", margin_top="10px"),
+        rx.text("Bebidas", weight="bold", color=Color.PINK, margin_top="10px"),
         rx.text("(tenga en cuenta que los cafés, bebidas alcohólicas etc. van aparte)", style={"font_style": "italic", "font_size": "12px"}),
         rx.hstack(
             rx.vstack(
@@ -643,7 +643,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
         rx.divider(margin_y="15px"),
 
         # Sección Chuches
-        rx.text("Chuches", weight="bold", color="#BE185D", margin_top="10px"),
+        rx.text("Chuches", weight="bold", color=Color.PINK, margin_top="10px"),
         rx.hstack(
             rx.input(
                 placeholder="0",
@@ -689,7 +689,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
             rx.divider(margin_y="5px"),
             rx.hstack(
                 rx.text("TOTAL EXTRAS:", weight="bold", size="4"),
-                rx.text(f"{FormBaseState.total_extra_food_price + FormBaseState.total_extra_drink_price + FormBaseState.total_candy_price:.2f}€", weight="bold", size="5", color="#BE185D"),
+                rx.text(f"{FormBaseState.total_extra_food_price + FormBaseState.total_extra_drink_price + FormBaseState.total_candy_price:.2f}€", weight="bold", size="5", color=Color.PINK),
                 justify_content="space-between",
                 width="100%"
             ),

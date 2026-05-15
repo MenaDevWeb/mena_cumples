@@ -1,9 +1,8 @@
 import reflex as rx
 import mena_cumples.components.pack_form as pack
+from mena_cumples.styles.styles import Color
 from mena_cumples.states.form_state import FormBaseState
 from ..routes import Routes
-
-
 
 
 @rx.page(route=Routes.PACK_25_PAX.value, title="Pack 25 personas")
@@ -11,7 +10,7 @@ def pack_25() -> rx.Component:
     return rx.container(
         rx.vstack(
             pack.pack_form(
-                image_url="/pack_25_image.webp",               
+                image_url="/pack_25_image.webp",
                 pack_type="PACK DE 25 PERSONAS--150€",
                 name_title="*¿Nombre del niño o niña del cumpleaños y edad?",
                 date_time="*¿Fecha y hora del cumpleaños?",
@@ -29,18 +28,18 @@ def pack_25() -> rx.Component:
                 bakery_title="REPOSTERÍA",
                 bakery_options = current_bakery_options,
                 observation_title="OBSERVACIONES",
-                child_name_value="",  
-                birth_date_value="",  
+                child_name_value="",
+                birth_date_value="",
                 birth_time_value="",
                 pizza_selected_value="",
                 rosca_selected_value="",
                 drink_selected_value="",
                 extra_selected="",
                 observation_selected_value="",
-            ),                               
+            ),
         ),
-        bg="#ece5f5",
-        on_mount=lambda: FormBaseState.select_pack("Pack_25")  # Llamar a select_pack al montar el componente        
+        bg=Color.PAGE_BG_ALT,
+        on_mount=lambda: FormBaseState.select_pack("Pack_25")
     )
 
 # opciones de radio button bocadillos

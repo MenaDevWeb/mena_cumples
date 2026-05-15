@@ -1,4 +1,5 @@
 import reflex as rx
+from mena_cumples.styles.styles import FontSize
 from mena_cumples.states.form_state import FormBaseState
 
 def radio_button_food(options: list[str]):
@@ -14,7 +15,7 @@ def radio_button_bakery(options: list[str]):
     return rx.radio(
         options,
         direction="column",
-        style={"font_size":"20px"},
+        style={"font_size": FontSize.INPUT},
         on_change=FormBaseState.update_bakery_option,
         size="3"
     )
