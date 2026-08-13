@@ -2,6 +2,7 @@ import reflex as rx
 import asyncio
 from typing import Dict
 from urllib.parse import quote
+from ..routes import Routes
 
 class FormBaseState(rx.State):
     """Estado base para el formulario de packs de cumpleaños."""
@@ -38,25 +39,36 @@ class FormBaseState(rx.State):
     code_locked: bool = False
 
     @rx.event
-    def apply_url_code(self):
-        """Lee el parámetro ?codigo= de la URL y precarga el código de reserva.
+    async def ensure_order_access(self):
+        """Candado de acceso a las páginas de pedido.
 
-        Si no hay código en la URL, limpia el código previo para que una visita
-        normal (sin enlace de WhatsApp) no arrastre una reserva anterior.
+        Solo se puede entrar a seleccionar pack o rellenar el formulario si la
+        URL trae un código de reserva REAL (?codigo=CUM-XXXX) existente en la
+        base de datos. Si no hay código o no es válido, se redirige al inicio.
         """
-        codigo = (self.router.page.params.get("codigo") or "").strip().upper()
-        if codigo:
-            self.reservation_code = codigo
-            self.code_locked = True
-        else:
-            self.reservation_code = ""
-            self.code_locked = False
+        from mena_cumples.supabase_utils import verificar_codigo_reserva
+
+        codigo = (self.router.url.query_parameters.get("codigo") or "").strip().upper()
+        if not codigo or not await asyncio.to_thread(verificar_codigo_reserva, codigo):
+            return rx.redirect(Routes.INDEX.value)
+        self.reservation_code = codigo
+        self.code_locked = True
 
     @rx.event
-    def init_pack_page(self, pack_type: str):
-        """Inicializa la página del pack: selecciona el pack y precarga el código."""
+    async def init_pack_page(self, pack_type: str):
+        """Inicializa la página del pack: selecciona el pack y precarga el código.
+
+        Si la URL no trae un código de reserva válido (existente en la base de
+        datos), redirige al inicio (candado de acceso).
+        """
+        from mena_cumples.supabase_utils import verificar_codigo_reserva
+
+        codigo = (self.router.url.query_parameters.get("codigo") or "").strip().upper()
+        if not codigo or not await asyncio.to_thread(verificar_codigo_reserva, codigo):
+            return rx.redirect(Routes.INDEX.value)
         self.select_pack(pack_type)
-        self.apply_url_code()
+        self.reservation_code = codigo
+        self.code_locked = True
 
     # Precios base (año 2026)
     PACK_BASE_PRICES = {

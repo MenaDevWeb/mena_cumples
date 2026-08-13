@@ -30,6 +30,29 @@ def get_supabase_client() -> Client:
     return _supabase_instance
 
 
+def verificar_codigo_reserva(codigo: str) -> bool:
+    """Devuelve True si el código de reserva existe en la tabla cumples_pedidos.
+
+    Usado por la web de cumpleaños para impedir pedidos con códigos inventados
+    o que el hotel no ha emitido. Si la consulta falla, se niega el acceso
+    (fallo en modo seguro).
+    """
+    codigo = (codigo or "").strip().upper()
+    if not codigo:
+        return False
+    try:
+        client = get_supabase_client()
+        response = (
+            client.table("cumples_pedidos")
+            .select("id")
+            .eq("codigo_reserva", codigo)
+            .execute()
+        )
+        return bool(response.data)
+    except Exception:
+        return False
+
+
 def reset_supabase_client() -> None:
     """Drops the cached client so a fresh one (with a new connection pool) is created."""
     global _supabase_instance

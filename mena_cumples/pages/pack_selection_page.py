@@ -58,7 +58,7 @@ def pack_selection() -> rx.Component:
         display="flex",
         flex_direction="column",
         background_color=Color.PAGE_BG,
-        on_mount=FormBaseState.apply_url_code,
+        on_mount=FormBaseState.ensure_order_access,
     )
 
 

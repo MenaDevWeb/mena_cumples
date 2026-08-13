@@ -87,14 +87,7 @@ def create_main_content():
                 description="Información de los packs que ofrecemos.",
                 href=Routes.PACKS_INFORMATION.value
             ),
-            create_feature_box(
-                image_alt="seleccion del pack",
-                image_src="/pedidos_image.webp",
-                title="¡ Haz tu pedido !",
-                description="Debe aceptar condiciones y seleccione pack.",
-                href=Routes.PACK_SELECTION.value,
-                conditions_acepted=State.conditions_acepted  # Usamos state
-            ),
+            create_order_card(),
             gap=Size.MEDIUM.value,
             display="grid",
             grid_template_columns=rx.breakpoints(
@@ -252,6 +245,89 @@ def create_conditions_footer():
         margin_top="40px",
         align="center",
         margin_bottom=Size.MEDIUM.value,
+    )
+
+
+def create_order_card():
+    """Tarjeta de acceso al pedido con el código de reserva.
+
+    Solo se puede hacer pedido introduciendo el código que el cliente recibió
+    por WhatsApp al reservar la fecha. Si no se han aceptado las condiciones,
+    la tarjeta aparece bloqueada igual que el resto de accesos.
+    """
+    return rx.cond(
+        State.conditions_acepted,
+        rx.box(
+            rx.image(
+                src="/pedidos_image.webp",
+                alt="seleccion del pack",
+                border_radius=BorderRadius.SMALL,
+            ),
+            create_main_heading(
+                font_size=FontSize.XL,
+                line_height="2rem",
+                align="center",
+                text="¡ Haz tu pedido !",
+            ),
+            create_description_text(
+                "Introduce el código de reserva que recibiste por WhatsApp para elegir tu pack."
+            ),
+            rx.input(
+                on_change=State.set_order_code,
+                value=State.order_code,
+                type="text",
+                placeholder="Código de reserva (ej: CUM-7XD4)",
+                width="100%",
+                padding=Size.SMALL.value,
+                border_radius=BorderRadius.SMALL,
+                margin_bottom=Size.SMALL.value,
+                font_size=FontSize.INPUT,
+                color=Color.BLACK,
+                background_color=Color.WHITE,
+                border=f"1px solid {Color.GRAY_BORDER}",
+                height="3rem",
+                line_height="1.25rem",
+                text_transform="uppercase",
+            ),
+            rx.button(
+                "HACER PEDIDO",
+                on_click=State.submit_order_code,
+                background_color=Color.PURPLE_BG,
+                color=Color.WHITE,
+                font_weight="700",
+                width="100%",
+                size="3",
+                padding="1.25rem 1rem",
+                border_radius=BorderRadius.FULL,
+                transition=Transition.DEFAULT,
+                _hover={"background_color": Color.PURPLE_LIGHT},
+            ),
+            padding=Size.MEDIUM.value,
+            box_shadow=Shadow.CARD,
+            border_radius=BorderRadius.SMALL,
+            background_color=Color.WHITE,
+        ),
+        rx.box(
+            rx.image(
+                src="/pedidos_image.webp",
+                alt="seleccion del pack",
+                border_radius=BorderRadius.SMALL,
+                opacity=0.6,
+            ),
+            create_main_heading(
+                font_size=FontSize.XL,
+                line_height="2rem",
+                align="center",
+                text="¡ Haz tu pedido !",
+            ),
+            create_description_text("Acepta las condiciones para hacer tu pedido."),
+            padding=Size.MEDIUM.value,
+            box_shadow=Shadow.CARD,
+            border_radius=BorderRadius.SMALL,
+            background_color=Color.GRAY_DISABLED,
+            cursor="not-allowed",
+            opacity=0.6,
+        )
     )
 
 
