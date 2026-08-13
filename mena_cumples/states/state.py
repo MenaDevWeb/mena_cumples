@@ -1,4 +1,5 @@
 import reflex as rx
+from urllib.parse import quote
 from ..routes import Routes
 
 class State(rx.State):
@@ -20,4 +21,14 @@ class State(rx.State):
             return rx.redirect(Routes.CONTACT_FORM_PAGE.value) 
         else:
             return rx.window_alert("Debe aceptar las condiciones para continuar.")
+
+    @rx.event
+    def handle_url_code(self):
+        """
+        Si se llega al índice con ?codigo=CUM-XXXX (enlace de WhatsApp),
+        redirige directamente a la selección de pack con el código incorporado.
+        """
+        codigo = (self.router.page.params.get("codigo") or "").strip().upper()
+        if codigo:
+            return rx.redirect(f"{Routes.PACK_SELECTION.value}?codigo={quote(codigo)}")
 

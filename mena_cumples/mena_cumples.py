@@ -14,7 +14,7 @@ from .components.footer import footer
 from .routes import Routes
 
 
-@rx.page(route=Routes.INDEX.value, title="Cumpleaños Mena Plaza")
+@rx.page(route=Routes.INDEX.value, title="Cumpleaños Mena Plaza", on_load=State.handle_url_code)
 def index() -> rx.Component:
     return rx.fragment(
         create_main_screen()

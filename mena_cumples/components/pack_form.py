@@ -41,7 +41,7 @@ def pack_form(
             FormBaseState.show_alert,
             rx.el.div(
                 rx.el.div(
-                    rx.el.h2("Límite Excedido", class_name="text-xl font-bold text-red-600 mb-3"),
+                    rx.el.h2(FormBaseState.alert_title, class_name="text-xl font-bold text-red-600 mb-3"),
                     rx.el.p(FormBaseState.alert_message, class_name="text-sm text-gray-700"),
                     rx.el.div(
                         rx.el.button(
@@ -68,6 +68,45 @@ def pack_form(
                     ),
                     rx.heading(FormBaseState.pack_title_with_price, size="8", align="center", width="100%", margin_top="20px"),
                     rx.text(pack_description, margin_top="2em", color_scheme="purple", size="4", weight="bold", style={"font_style": "italic"}),
+                    class_name="p-4 rounded-lg shadow mb-4",
+                    style={"backgroundColor": Color.CARD_PINK}
+                ),
+                # Card: Código de reserva
+                rx.el.div(
+                    rx.vstack(
+                        rx.text("¿Ya tienes tu reserva?", weight="bold", size="5", color=Color.PINK),
+                        rx.text(
+                            "Introduce el código de reserva que recibiste por WhatsApp "
+                            "para poder hacer tu pedido.",
+                            style={"font_style": "italic", "font_size": "14px"},
+                        ),
+                        rx.input(
+                            placeholder="Código de reserva (ej: CUM-7XD4)",
+                            value=FormBaseState.reservation_code,
+                            read_only=FormBaseState.code_locked,
+                            on_change=lambda new_value: FormBaseState.update_field("reservation_code", new_value),
+                            style={
+                                "width": "100%",
+                                "height": "45px",
+                                "font_size": "18px",
+                                "font_weight": "700",
+                                "text_transform": "uppercase",
+                                "letter_spacing": "2px",
+                            },
+                        ),
+                        rx.cond(
+                            FormBaseState.code_locked,
+                            rx.text(
+                                f"Reserva {FormBaseState.reservation_code} cargada desde tu enlace. "
+                                "Solo tienes que elegir el pack y rellenar tu pedido.",
+                                style={"font_style": "italic", "font_size": "13px"},
+                                color="#16a34a",
+                            ),
+                            rx.fragment(),
+                        ),
+                        width="100%",
+                        spacing="2",
+                    ),
                     class_name="p-4 rounded-lg shadow mb-4",
                     style={"backgroundColor": Color.CARD_PINK}
                 ),
@@ -464,15 +503,16 @@ def aceptar_condiciones():
 # Función para seleccionar el pack
 def select_pack_component():
     return rx.vstack(
-        rx.select(
-            [
-                rx.option("Pack_15", value="Pack_15"),
-                rx.option("Pack_20", value="Pack_20"),
-                rx.option("Pack_25", value="Pack_25"),
-                rx.option("Pack_30", value="Pack_30"),
-            ],
+        rx.select.root(
+            rx.select.trigger(placeholder="Selecciona un pack", width="100%"),
+            rx.select.content(
+                rx.select.item("Pack 15", value="Pack_15"),
+                rx.select.item("Pack 20", value="Pack_20"),
+                rx.select.item("Pack 25", value="Pack_25"),
+                rx.select.item("Pack 30", value="Pack_30"),
+            ),
             on_change=lambda value: FormBaseState.select_pack(value),
-            placeholder="Selecciona un pack",
+            width="100%",
         ),
         rx.text(
             "Máximo permitido: {FormBaseState.max_allowed_pizza_rosca}",

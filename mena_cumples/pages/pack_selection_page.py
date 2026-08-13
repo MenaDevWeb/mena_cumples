@@ -1,6 +1,7 @@
 import reflex as rx
 from mena_cumples.styles.styles import Size, Color, FontSize, BorderRadius, Shadow, Transition
 from mena_cumples.states.state import State
+from mena_cumples.states.form_state import FormBaseState
 from mena_cumples.components.navbar import navbar
 from mena_cumples.components.footer import footer
 from ..routes import Routes
@@ -19,6 +20,21 @@ def pack_selection() -> rx.Component:
         rx.box(
             rx.vstack(
                 pack_options_grid(),
+                rx.cond(
+                    FormBaseState.code_locked,
+                    rx.box(
+                        rx.text(
+                            f"Reserva con código {FormBaseState.reservation_code} cargada. "
+                            "Elige tu pack para continuar.",
+                            weight="bold",
+                            color=Color.PURPLE_DARK,
+                        ),
+                        padding=Size.SMALL.value,
+                        border_radius=BorderRadius.SMALL,
+                        background_color=Color.CARD_PINK,
+                    ),
+                    rx.fragment(),
+                ),
                 spacing="7",
                 align="center",
                 width="100%",
@@ -42,6 +58,7 @@ def pack_selection() -> rx.Component:
         display="flex",
         flex_direction="column",
         background_color=Color.PAGE_BG,
+        on_mount=FormBaseState.apply_url_code,
     )
 
 
@@ -63,6 +80,15 @@ def main_title() -> rx.Component:
 
 
 def _create_pack_card(title: str, price: int, num_people: int, image_src: str, on_click_action: str | None = None) -> rx.Component:
+    # Si el código de reserva viene del enlace de WhatsApp, se arrastra al
+    # formulario del pack para que el cliente no tenga que volver a teclearlo.
+    href = on_click_action if on_click_action else "#"
+    if on_click_action:
+        href = rx.cond(
+            FormBaseState.code_locked,
+            f"{on_click_action}?codigo={FormBaseState.reservation_code}",
+            on_click_action,
+        )
     button_or_link = rx.link(
         rx.button(
             rx.text("Selecciona"),
@@ -70,7 +96,7 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
             color_scheme="plum",
             width="100%",
         ),
-        href=on_click_action if on_click_action else "#",
+        href=href,
         is_external=False,
         width="90%",
         margin_top=Size.SMALL.value,

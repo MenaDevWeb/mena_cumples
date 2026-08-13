@@ -39,7 +39,7 @@ def pack_25() -> rx.Component:
             ),
         ),
         bg=Color.PAGE_BG_ALT,
-        on_mount=lambda: FormBaseState.select_pack("Pack_25")
+        on_mount=lambda: FormBaseState.init_pack_page("Pack_25")
     )
 
 # opciones de radio button bocadillos

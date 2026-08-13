@@ -1,4 +1,5 @@
 import reflex as rx
+import asyncio
 from typing import Dict
 from urllib.parse import quote
 
@@ -10,6 +11,7 @@ class FormBaseState(rx.State):
     child_age: str = ""
     birth_date: str = ""
     birth_time: str = ""
+    reservation_code: str = ""
     selected_food_option: str = ""
     butter_on_sandwiches: bool = False
     pizza_selected: Dict[str, int] = {}
@@ -26,9 +28,35 @@ class FormBaseState(rx.State):
     update_trigger: int = 0
     alert_message: str = ""
     alert_type: str = ""
+    alert_title: str = ""
     max_allowed_pizza_rosca: int = 3
     max_allowed_drinks: int = 4
     selected_pack: str = ""
+
+    # Código de reserva cargado desde el enlace de WhatsApp (?codigo=CUM-XXXX).
+    # code_locked bloquea el campo para que el cliente no pueda modificar el código.
+    code_locked: bool = False
+
+    @rx.event
+    def apply_url_code(self):
+        """Lee el parámetro ?codigo= de la URL y precarga el código de reserva.
+
+        Si no hay código en la URL, limpia el código previo para que una visita
+        normal (sin enlace de WhatsApp) no arrastre una reserva anterior.
+        """
+        codigo = (self.router.page.params.get("codigo") or "").strip().upper()
+        if codigo:
+            self.reservation_code = codigo
+            self.code_locked = True
+        else:
+            self.reservation_code = ""
+            self.code_locked = False
+
+    @rx.event
+    def init_pack_page(self, pack_type: str):
+        """Inicializa la página del pack: selecciona el pack y precarga el código."""
+        self.select_pack(pack_type)
+        self.apply_url_code()
 
     # Precios base (año 2026)
     PACK_BASE_PRICES = {
@@ -89,8 +117,15 @@ class FormBaseState(rx.State):
 
 
     @rx.event
-    def show_alert_dialog(self, message: str, alert_type: str = "pizzas_roscas"):
+    def show_alert_dialog(self, message: str, alert_type: str = "pizzas_roscas", title: str = ""):
         """Muestra un diálogo de alerta."""
+        titles = {
+            "pizzas_roscas": "Límite Excedido",
+            "drinks": "Límite Excedido",
+            "error": "Error",
+            "success": "Éxito",
+        }
+        self.alert_title = title or titles.get(alert_type, "Aviso")
         self.show_alert = True
         self.alert_message = message
         self.alert_type = alert_type
@@ -100,6 +135,7 @@ class FormBaseState(rx.State):
         """Oculta el diálogo de alerta."""
         self.show_alert = False
         self.alert_message = ""
+        self.alert_title = ""
 
     @rx.event
     def update_pizza_selected(self, pizza_type: str, value: str):
@@ -332,6 +368,7 @@ class FormBaseState(rx.State):
             bool(self.child_age.strip()) and
             bool(self.birth_date.strip()) and
             bool(self.birth_time.strip()) and
+            bool(self.reservation_code.strip()) and
             bool(self.selected_food_option.strip()) and
             bool(self.selected_bakery_option.strip()) and
             self.total_pizza_rosca == self.max_allowed_pizza_rosca and
@@ -366,6 +403,7 @@ class FormBaseState(rx.State):
             "child_age": self.child_age,
             "birth_date": self.birth_date,
             "birth_time": self.birth_time,
+            "reservation_code": self.reservation_code,
             "selected_food_option": self.selected_food_option,
             "butter_on_sandwiches": self.butter_on_sandwiches,
             "pizza_selected": self.pizza_selected,
@@ -393,7 +431,8 @@ class FormBaseState(rx.State):
         message = (
             f"Fecha: {data['birth_date']}\n"
             f"Hora: {data['birth_time']}\n"
-            f"Cumpleaños de: {data['child_name']} edad {data['child_age']}\n\n"
+            f"Cumpleaños de: {data['child_name']} edad {data['child_age']}\n"
+            f"CÓDIGO DE RESERVA: {data['reservation_code']}\n\n"
             f"{pack_name}\n"
             "Los packs de cumpleaños incluyen patatas, palomitas, bollería/galletas y frutos secos.\n\n"
         )
@@ -472,9 +511,66 @@ class FormBaseState(rx.State):
 
         return message
 
+    def _compute_total_price(self, pack_price: int) -> float:
+        data = self.collected_data
+        return (
+            pack_price
+            + data["total_extra_food_price"]
+            + data["total_extra_drink_price"]
+            + data["total_candy_price"]
+            + data["bakery_price"]
+        )
+
+    async def _save_order_to_supabase(self, pack_name: str, pack_price: int) -> bool:
+        """Guarda el pedido en Supabase actualizando la ficha existente por codigo_reserva.
+
+        La ficha (reserva manual del hotel) ya existe en la tabla cumples_pedidos.
+        Aquí SOLO se actualiza esa misma fila con el detalle del pedido web,
+        evitando duplicados. Devuelve True si se actualizó (código válido).
+        """
+        try:
+            from mena_cumples.supabase_utils import get_supabase_client
+
+            data = self.collected_data
+            total_price = self._compute_total_price(pack_price)
+            codigo = (data["reservation_code"] or "").strip().upper()
+
+            if not codigo:
+                return False
+
+            payload = {
+                "pack": self.selected_pack,
+                "nombre_nino": data["child_name"],
+                "edad": data["child_age"],
+                "fecha_cumple": data["birth_date"] or None,
+                "hora_cumple": data["birth_time"],
+                "opcion_comida": data["selected_food_option"],
+                "mantequilla": data["butter_on_sandwiches"],
+                "total_precio": round(total_price, 2),
+                "observaciones": data["observation_selected"],
+                "detalle": data,
+                "pedido_web": True,
+            }
+
+            client = get_supabase_client()
+            response = await asyncio.to_thread(
+                lambda: client.table("cumples_pedidos")
+                .update(payload)
+                .eq("codigo_reserva", codigo)
+                .execute()
+            )
+            if response.data:
+                print(f"Pedido {pack_name} vinculado a la ficha con código {codigo} (id={response.data[0]['id']})")
+                return True
+            print(f"Código de reserva {codigo} no encontrado")
+            return False
+        except Exception as e:
+            print(f"Error guardando pedido en Supabase: {e}")
+            return False
+
     @rx.event
-    def send_whatsapp_message(self):
-        """Envía el mensaje de WhatsApp con los datos del formulario."""
+    async def send_whatsapp_message(self):
+        """Envía el mensaje de WhatsApp con los datos del formulario y guarda el pedido en Supabase."""
         pack_map = {
             "Pack_15": ("PACK DE 15 PERSONAS", False),
             "Pack_20": ("PACK DE 20 PERSONAS", False),
@@ -484,9 +580,20 @@ class FormBaseState(rx.State):
         if self.selected_pack in pack_map:
             pack_name, include_tortillas = pack_map[self.selected_pack]
             price = self.get_pack_price  # Obtener precio dinámico
+            # Guardar el pedido en Supabase (actualiza la ficha por código) antes de abrir WhatsApp.
+            # Si el código no es válido o falla, se avisa al usuario y NO se abre WhatsApp.
+            saved = await self._save_order_to_supabase(pack_name, price)
+            if not saved:
+                self.show_alert_dialog(
+                    "No se ha podido realizar tu pedido. Comprueba que el CÓDIGO DE RESERVA es "
+                    "correcto (lo recibiste por WhatsApp al reservar la fecha) e inténtalo de nuevo. "
+                    "Si el problema continúa, contáctanos por WhatsApp.",
+                    "error",
+                )
+                return
             pack_name_with_price = f"{pack_name}--{price}€"
             message = self._generate_whatsapp_message(pack_name_with_price, price, include_tortillas)
             encoded_message = quote(message) # Usar urllib.parse.quote para una codificación correcta
             phone_number = '34952520965'
             whatsapp_url = f"https://wa.me/{phone_number}?text={encoded_message}"
-            return rx.call_script(f"window.location.href = '{whatsapp_url}'")
+            yield rx.call_script(f"window.location.href = '{whatsapp_url}'")
