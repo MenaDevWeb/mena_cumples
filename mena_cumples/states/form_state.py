@@ -559,6 +559,7 @@ class FormBaseState(rx.State):
                 "opcion_comida": data["selected_food_option"],
                 "mantequilla": data["butter_on_sandwiches"],
                 "total_precio": round(total_price, 2),
+                "estado": "Confirmado",
                 "observaciones": data["observation_selected"],
                 "detalle": data,
                 "pedido_web": True,
