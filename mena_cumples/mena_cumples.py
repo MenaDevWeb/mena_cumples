@@ -11,6 +11,7 @@ from .pages.packs_information_page import packs_information
 from .styles.styles import style, Color, FontSize, BorderRadius, Shadow, Transition, Size
 from .components.navbar import navbar
 from .components.footer import footer
+from .data.conditions import CONDITIONS
 from .routes import Routes
 
 
@@ -23,15 +24,18 @@ def index() -> rx.Component:
 def create_main_screen():
     """Create the main application component with styles and page layout."""
     return rx.fragment(
-        rx.el.link(
-            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css",
-            rel="stylesheet",
-        ),
         rx.el.style(
             """
         @font-face {
             font-family: 'LucideIcons';
             src: url(https://unpkg.com/lucide-static@latest/font/Lucide.ttf) format('truetype');
+        }
+        html {
+            font-size: 16px;
+        }
+        body {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
     """
         ),
@@ -70,7 +74,7 @@ def create_main_content():
                 text="¿ Quieres celebrar un cumpleaños ?",
             ),
             create_description_text(
-                text="Debe aceptar las condiciones antes de consultar disponibilidad o realizar su pedido.",
+                text="Revisa las condiciones desplegables. Se aceptarán obligatoriamente al elegir tu pack y hacer el pedido.",
             ),
             create_conditions_section(),
             create_button(text="PREGUNTAR DISPONIBILIDAD"),
@@ -78,6 +82,7 @@ def create_main_content():
                 text="A tener en cuenta de que el cumpleaños no está confirmado hasta que no se entregue el depósito de 50€.",
             ),
             text_align="center",
+            class_name="fade-in-up",
         ),
         rx.box(
             create_feature_box(
@@ -99,6 +104,8 @@ def create_main_content():
             margin_top=Size.XL.value,
             max_width="1000px",
             margin_x="auto",
+            class_name="fade-in-up",
+            style={"animation_delay": "0.2s"},
         ),
         rx.box(
             create_main_heading(
@@ -112,6 +119,8 @@ def create_main_content():
             ),
             margin_top=Size.XL.value,
             text_align="center",
+            class_name="fade-in-up",
+            style={"animation_delay": "0.4s"},
         ),
         width="100%",
         max_width="1200px",
@@ -123,62 +132,72 @@ def create_main_content():
 
 
 def create_conditions_section():
-    """Create the 'Condiciones:' section with feature list."""
-    return rx.box(
-        create_main_heading(
-            font_size=FontSize.XXL,
-            line_height="2.25rem",
-            align="left",
-            text="¡ CONDICIONES !",
-        ),
-        rx.list(
-            create_list_item_with_icon(
-                text= "Está prohibida bebida o comida de fuera del establecimiento."
-            ),
-            create_list_item_with_icon(
-                text= "La edad máxima para elegir los packs de cumples es de 12 años."
-            ),
-            create_list_item_with_icon(
-                text= "Las mesas y sillas se montarán dependiendo del pack que elija."
-            ),
-            create_list_item_with_icon(
-                text= "La duración máxima del cumpleaños es de 2 horas y media."
-            ),
-            create_list_item_with_icon(
-                text= "Las chucherías se permiten en cucuruchos (mesas de chuches no)"
-            ),
-            create_list_item_with_icon(
-                text= "Los 50€ de fianza son no reembolsables en caso de cancelación."   
-            ),
-            create_list_item_with_icon(
-                text= "La celebración puede empezar a más tardar a las 19:30h (18:30h desde noviembre)."
-            ),
-            create_list_item_with_icon(
-                text= "No colocamos mesas auxiliares aparte, solamente será la mesa del cumpleaños."
-            ),
-            create_list_item_with_icon(
-                text= "La decoración depende del espacio ¡No se puede decorar la pared del supermercado!"
-            ),
-            create_list_item_with_icon(
-                text= "La fecha que elijas no podrá cambiarse más adelante."
-            ),
-            create_list_item_with_icon(
-                text="Puedes modificar el pack, según disponibilidad, pero no cambiar a un pack menor."
-            ),
-            create_list_item_with_icon(
-                text = "Para reservar, primero confirmar nº de personas y hora."
-            ),            
-            gap=Size.SMALL.value,
-            display="grid",
-            grid_template_columns=rx.breakpoints(
-                {
-                    "0px": "repeat(1, minmax(0, 1fr))",
-                    "768px": "repeat(2, minmax(0, 1fr))",
-                }
-            ),
-        ),
-        create_conditions_footer(),
+    """Sección informativa colapsable - no bloquea el flujo.
 
+    Las condiciones se aceptan obligatoriamente en el modal de
+    pack_selection (pack_selection_page.py:69) y no aquí. En la home
+    solo informamos, para que el cliente no pueda decir que no se le avisó,
+    pero sin fricción para preguntar disponibilidad o hacer pedido.
+    """
+    return rx.box(
+        rx.el.details(
+            rx.el.summary(
+                rx.hstack(
+                    rx.heading(
+                        "¡ CONDICIONES !",
+                        font_size=FontSize.XL,
+                        line_height="2rem",
+                        color=Color.PURPLE,
+                        font_weight="700",
+                        as_="h3",
+                    ),
+                    rx.text(
+                        "Ver detalle (se aceptarán al pedir)",
+                        font_size=FontSize.SMALL,
+                        color=Color.PURPLE_DARK,
+                        font_weight="600",
+                    ),
+                    justify="between",
+                    align="center",
+                    width="100%",
+                ),
+                style={"cursor": "pointer", "list_style": "none"},
+            ),
+            rx.list(
+                *[
+                    create_list_item_with_icon(text=cond)
+                    for cond in CONDITIONS
+                ],
+                gap=Size.SMALL.value,
+                display="grid",
+                grid_template_columns=rx.breakpoints(
+                    {
+                        "0px": "repeat(1, minmax(0, 1fr))",
+                        "768px": "repeat(2, minmax(0, 1fr))",
+                    }
+                ),
+                margin_top=Size.SMALL.value,
+            ),
+            rx.box(
+                rx.text(
+                    "Las condiciones se aceptarán obligatoriamente al elegir tu pack. "
+                    "Al continuar, confirmas que las has leído.",
+                    font_size=FontSize.SMALL,
+                    color=Color.PURPLE_DARK,
+                    font_weight="600",
+                    margin_top=Size.SMALL.value,
+                    font_style="italic",
+                ),
+                rx.text(
+                    "Se recomienda navegador Chrome o Firefox. Safari de iPhone puede dar problemas.",
+                    font_weight="bold",
+                    color=Color.PURPLE,
+                    font_size=FontSize.SMALL,
+                    margin_top="0.5rem",
+                ),
+            ),
+            style={"border": "none"},
+        ),
         background_color=Color.CARD_PINK,
         margin_top=Size.MEDIUM.value,
         margin_bottom=Size.MEDIUM.value,
@@ -225,109 +244,76 @@ def create_main_heading(font_size, line_height, text, align):
 
 
 def create_conditions_footer():
+    # Deprecated: ya no se usa en Home. Se mantiene por compatibilidad
+    # pero la home actual usa bloque informativo colapsable.
+    # El gate real está en pack_selection_page.conditions_modal.
     return rx.vstack(
-        rx.checkbox(
-            rx.text(
-                "He leído y acepto las condiciones. (acepte para poder preguntar por disponibilidad)",
-                color=Color.PINK, font_size="18px", font_weight="bold", margin_bottom="20px"
-            ),
-            on_change=State.set_conditions_acepted,
-            required=True,
-            color_scheme="purple",
-            size='3'
-        ),
         rx.text(
-            "Se recomienda navegador Chrome o Firefox. Safari de iphone puede dar problemas.",
+            "Se recomienda navegador Chrome o Firefox. Safari de iPhone puede dar problemas.",
             font_weight="bold",
             color=Color.PURPLE,
         ),
         spacing="2",
-        margin_top="40px",
+        margin_top="1rem",
         align="center",
-        margin_bottom=Size.MEDIUM.value,
     )
 
 
 def create_order_card():
-    """Tarjeta de acceso al pedido con el código de reserva.
+    """Tarjeta de acceso al pedido - siempre activa.
 
-    Solo se puede hacer pedido introduciendo el código que el cliente recibió
-    por WhatsApp al reservar la fecha. Si no se han aceptado las condiciones,
-    la tarjeta aparece bloqueada igual que el resto de accesos.
+    El gate de condiciones ya no está en Home. La aceptación
+    obligatoria vive en pack_selection.conditions_modal.
     """
-    return rx.cond(
-        State.conditions_acepted,
-        rx.box(
-            rx.image(
-                src="/pedidos_image.webp",
-                alt="seleccion del pack",
-                border_radius=BorderRadius.SMALL,
-            ),
-            create_main_heading(
-                font_size=FontSize.XL,
-                line_height="2rem",
-                align="center",
-                text="¡ Haz tu pedido !",
-            ),
-            create_description_text(
-                "Introduce el código de reserva que recibiste por WhatsApp para elegir tu pack."
-            ),
-            rx.input(
-                on_change=State.set_order_code,
-                value=State.order_code,
-                type="text",
-                placeholder="Código de reserva (ej: CUM-7XD4)",
-                width="100%",
-                padding=Size.SMALL.value,
-                border_radius=BorderRadius.SMALL,
-                margin_bottom=Size.SMALL.value,
-                font_size=FontSize.INPUT,
-                color=Color.BLACK,
-                background_color=Color.WHITE,
-                border=f"1px solid {Color.GRAY_BORDER}",
-                height="3rem",
-                line_height="1.25rem",
-                text_transform="uppercase",
-            ),
-            rx.button(
-                "HACER PEDIDO",
-                on_click=State.submit_order_code,
-                background_color=Color.PURPLE_BG,
-                color=Color.WHITE,
-                font_weight="700",
-                width="100%",
-                size="3",
-                padding="1.25rem 1rem",
-                border_radius=BorderRadius.FULL,
-                transition=Transition.DEFAULT,
-                _hover={"background_color": Color.PURPLE_LIGHT},
-            ),
-            padding=Size.MEDIUM.value,
-            box_shadow=Shadow.CARD,
+    return rx.box(
+        rx.image(
+            src="/pedidos_image.webp",
+            alt="seleccion del pack",
             border_radius=BorderRadius.SMALL,
-            background_color=Color.WHITE,
         ),
-        rx.box(
-            rx.image(
-                src="/pedidos_image.webp",
-                alt="seleccion del pack",
-                border_radius=BorderRadius.SMALL,
-                opacity=0.6,
-            ),
-            create_main_heading(
-                font_size=FontSize.XL,
-                line_height="2rem",
-                align="center",
-                text="¡ Haz tu pedido !",
-            ),
-            create_description_text("Acepta las condiciones para hacer tu pedido."),
-            padding=Size.MEDIUM.value,
-            box_shadow=Shadow.CARD,
+        create_main_heading(
+            font_size=FontSize.XL,
+            line_height="2rem",
+            align="center",
+            text="¡ Haz tu pedido !",
+        ),
+        create_description_text(
+            "Introduce el código de reserva que recibiste por WhatsApp para elegir tu pack."
+        ),
+        rx.input(
+            on_change=State.set_order_code,
+            value=State.order_code,
+            type="text",
+            placeholder="Código de reserva (ej: CUM-7XD4)",
+            width="100%",
+            padding=Size.SMALL.value,
             border_radius=BorderRadius.SMALL,
-            background_color=Color.GRAY_DISABLED,
-            cursor="not-allowed",
-            opacity=0.6,
-        )
+            margin_bottom=Size.SMALL.value,
+            font_size=FontSize.INPUT,
+            color=Color.BLACK,
+            background_color=Color.WHITE,
+            border=f"1px solid {Color.GRAY_BORDER}",
+            height="3rem",
+            line_height="1.25rem",
+            text_transform="uppercase",
+        ),
+        rx.button(
+            "HACER PEDIDO",
+            on_click=State.submit_order_code,
+            background_color=Color.PURPLE_BG,
+            color=Color.WHITE,
+            font_weight="700",
+            width="100%",
+            size="3",
+            padding="1.25rem 1rem",
+            border_radius=BorderRadius.FULL,
+            transition=Transition.DEFAULT,
+            _hover={"background_color": Color.PURPLE_LIGHT},
+        ),
+        padding=Size.MEDIUM.value,
+        box_shadow=Shadow.CARD,
+        border_radius=BorderRadius.SMALL,
+        background_color=Color.WHITE,
     )
 
 
@@ -341,66 +327,86 @@ def create_description_text(text):
     )
 
 def create_deposit_text(text):
-    return rx.text(
-        text,
+    # Banner alto contraste - fix overlap del pill 50€ con línea superior
+    _ = text
+    return rx.box(
+        rx.flex(
+            rx.icon(tag="triangle-alert", color=Color.ERROR, size=28, flex_shrink="0"),
+            rx.text(
+                "A tener en cuenta: el cumpleaños ",
+                rx.el.span(
+                    "NO está confirmado",
+                    font_weight="900",
+                    text_decoration="underline",
+                    text_decoration_thickness="2px",
+                ),
+                " hasta entregar el depósito de ",
+                rx.el.span(
+                    "50€",
+                    font_weight="900",
+                    font_size=FontSize.LARGE,
+                    background_color=Color.ERROR,
+                    color=Color.WHITE,
+                    padding="0.1rem 0.45rem",
+                    border_radius="9999px",
+                    display="inline-block",
+                    line_height="1",
+                    vertical_align="middle",
+                    white_space="nowrap",
+                    margin_left="0.2rem",
+                ),
+                ".",
+                color=Color.ERROR,
+                font_size=FontSize.LARGE,
+                line_height="2rem",
+                font_weight="700",
+                text_align="left",
+                flex="1",
+                min_width="0",
+            ),
+            direction="row",
+            align="center",
+            justify="center",
+            gap="0.75rem",
+            wrap="nowrap",
+            width="100%",
+        ),
+        background_color=Color.ERROR_BG,
+        border=f"2px solid {Color.ERROR}",
+        border_left=f"6px solid {Color.ERROR}",
+        border_radius=BorderRadius.MEDIUM,
+        padding="1rem 1.25rem",
         margin_top=Size.MEDIUM.value,
-        color=Color.ERROR,
-        font_size=FontSize.LARGE,
-        line_height="1.75rem",
-        font_weight="bold"
+        box_shadow="0 4px 12px rgba(220, 38, 38, 0.15)",
+        width="100%",
+        max_width="850px",
+        margin_x="auto",
+        class_name="scale-in",
+        overflow="hidden",
     )
 
 def create_button(text):
-    return rx.cond(
-        State.conditions_acepted,
-        rx.button(
-            text,
-            on_click=State.handle_ask_availability_click,
-            background_color=Color.PURPLE_BG,
-            color=Color.WHITE,
-            font_weight="700",
-            size="3",
-            padding="2.5rem 2rem",
-            border_radius=BorderRadius.FULL,
-            transition=Transition.DEFAULT,
-            _hover={"background_color": Color.PURPLE_LIGHT},
-        ),
-        rx.button(
-            text,
-            background_color="#ebe2f8",
-            color=Color.GRAY_TEXT,
-            font_weight="700",
-            padding="2.5rem 2rem",
-            border_radius=BorderRadius.FULL,
-            cursor="not-allowed",
-            opacity=0.6,
-        ),
+    # Home ya no bloquea - el gate real es el modal de packs
+    return rx.button(
+        text,
+        on_click=State.handle_ask_availability_click,
+        background_color=Color.PURPLE_BG,
+        color=Color.WHITE,
+        font_weight="700",
+        size="3",
+        padding="2.5rem 2rem",
+        border_radius=BorderRadius.FULL,
+        transition=Transition.DEFAULT,
+        _hover={"background_color": Color.PURPLE_LIGHT},
     )
 
 
 def create_feature_box(image_src, image_alt, title, description, href, conditions_acepted=True):
-    return rx.cond(
-        conditions_acepted,
-        rx.link(
-            rx.box(
-                rx.image(src=image_src, alt=image_alt, border_radius=BorderRadius.SMALL),
-                create_main_heading(
-                    font_size=FontSize.XL,
-                    line_height="2rem",
-                    align="center",
-                    text=title,
-                ),
-                create_description_text(description),
-                padding=Size.MEDIUM.value,
-                box_shadow=Shadow.CARD,
-                border_radius=BorderRadius.SMALL,
-                background_color=Color.WHITE,
-                _hover={"text_decoration": "none"},
-            ),
-            href=href,
-        ),
+    # Home informativo, siempre activo. El bloqueo real es en packs.
+    _ = conditions_acepted  # compat param
+    return rx.link(
         rx.box(
-            rx.image(src=image_src, alt=image_alt, border_radius=BorderRadius.SMALL, opacity=0.6),
+            rx.image(src=image_src, alt=image_alt, border_radius=BorderRadius.SMALL),
             create_main_heading(
                 font_size=FontSize.XL,
                 line_height="2rem",
@@ -411,10 +417,10 @@ def create_feature_box(image_src, image_alt, title, description, href, condition
             padding=Size.MEDIUM.value,
             box_shadow=Shadow.CARD,
             border_radius=BorderRadius.SMALL,
-            background_color=Color.GRAY_DISABLED,
-            cursor="not-allowed",
-            opacity=0.6,
-        )
+            background_color=Color.WHITE,
+            _hover={"text_decoration": "none"},
+        ),
+        href=href,
     )
 
 
