@@ -606,7 +606,16 @@ class FormBaseState(rx.State):
                 return
             pack_name_with_price = f"{pack_name}--{price}€"
             message = self._generate_whatsapp_message(pack_name_with_price, price, include_tortillas)
-            encoded_message = quote(message) # Usar urllib.parse.quote para una codificación correcta
-            phone_number = '34952520965'
-            whatsapp_url = f"https://wa.me/{phone_number}?text={encoded_message}"
-            yield rx.call_script(f"window.location.href = '{whatsapp_url}'")
+            encoded_message = quote(message)  # Usar urllib.parse.quote para una codificación correcta
+            phone_number = "34952520965"
+            # api.whatsapp.com/send es más fiable que wa.me para mensajes largos
+            # (sobre todo en iOS/Safari). window.open con fallback a location.href
+            # evita que un bloqueo de popup o un contexto async deje al usuario
+            # sin abrir WhatsApp.
+            whatsapp_url = f"https://api.whatsapp.com/send?phone={phone_number}&text={encoded_message}"
+            script = (
+                f"const url = '{whatsapp_url}';"
+                "const win = window.open(url, '_blank', 'noopener');"
+                "if (!win) { window.location.href = url; }"
+            )
+            yield rx.call_script(script)

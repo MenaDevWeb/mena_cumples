@@ -63,14 +63,76 @@ class BorderRadius:
     FULL = "9999px"
 
 class Shadow:
-    CARD = "0px 4px 6px rgba(0, 0, 0, 0.1)"
-    FORM = "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+    # Sombras suaves con múltiples capas para profundidad moderno
+    CARD = "0 2px 4px rgba(124, 58, 237, 0.06), 0 8px 16px rgba(124, 58, 237, 0.08)"
+    CARD_HOVER = "0 4px 8px rgba(124, 58, 237, 0.10), 0 16px 32px rgba(124, 58, 237, 0.14)"
+    FORM = "0 10px 15px -3px rgba(124, 58, 237, 0.1), 0 4px 6px -2px rgba(190, 24, 93, 0.05)"
+    NAVBAR = "0 1px 3px rgba(124, 58, 237, 0.08), 0 1px 2px rgba(190, 24, 93, 0.04)"
+    SOFT = "0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04)"
+    GLOW_PINK = "0 0 20px rgba(249, 168, 212, 0.5)"
+    GLOW_PURPLE = "0 0 20px rgba(167, 139, 250, 0.5)"
+    # Mantener compatibilidad con usos antiguos
+    # (card/form se redefinen arriba)
 
 class Transition:
     DEFAULT = "background-color 300ms ease-in-out"
     FAST = "all 150ms ease-in-out"
+    SMOOTH = "all 350ms cubic-bezier(0.4, 0, 0.2, 1)"
     INPUT = "background-color, border-color, color, fill, stroke, opacity, box-shadow, transform"
     INPUT_TIMING = "cubic-bezier(0.4, 0, 0.2, 1)"
     SHADOW = "box-shadow 0.3s ease-in-out"
+    CARD = "transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)"
 
-style = {}
+# Estilos globales modernizados
+style = {
+    # Fallback global (html 16px se fija via rx.el.style en mena_cumples.py para evitar nesting incorrecto)
+    "font_family": "Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
+    # Animaciones globales inyectadas como CSS
+    "@keyframes fadeInUp": {
+        "from": {"opacity": "0", "transform": "translateY(20px)"},
+        "to": {"opacity": "1", "transform": "translateY(0)"},
+    },
+    "@keyframes fadeIn": {
+        "from": {"opacity": "0"},
+        "to": {"opacity": "1"},
+    },
+    "@keyframes scaleIn": {
+        "from": {"opacity": "0", "transform": "scale(0.95)"},
+        "to": {"opacity": "1", "transform": "scale(1)"},
+    },
+    "@keyframes floatY": {
+        "0%, 100%": {"transform": "translateY(0)"},
+        "50%": {"transform": "translateY(-6px)"},
+    },
+    # Clases utilitarias para animaciones
+    ".fade-in-up": {
+        "animation": "fadeInUp 0.6s ease-out forwards",
+    },
+    ".fade-in": {
+        "animation": "fadeIn 0.5s ease-out forwards",
+    },
+    ".scale-in": {
+        "animation": "scaleIn 0.4s ease-out forwards",
+    },
+    ".card-hover": {
+        "transition": "transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+    ".card-hover:hover": {
+        "transform": "translateY(-4px)",
+        "box_shadow": "0 4px 8px rgba(124, 58, 237, 0.10), 0 16px 32px rgba(124, 58, 237, 0.14)",
+    },
+    # Scrollbar moderno
+    "::webkit-scrollbar": {
+        "width": "8px",
+    },
+    "::webkit-scrollbar-track": {
+        "background": "#FDF2F8",
+    },
+    "::webkit-scrollbar-thumb": {
+        "background": "#D8B4FE",
+        "border_radius": "9999px",
+    },
+    "::webkit-scrollbar-thumb:hover": {
+        "background": "#A78BFA",
+    },
+}

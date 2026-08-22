@@ -4,61 +4,154 @@ from mena_cumples.states.state import State
 from mena_cumples.states.form_state import FormBaseState
 from mena_cumples.components.navbar import navbar
 from mena_cumples.components.footer import footer
+from mena_cumples.data.conditions import CONDITIONS
 from ..routes import Routes
 
 
 @rx.page(route=Routes.PACK_SELECTION.value)
 def pack_selection() -> rx.Component:
-    return rx.box(
+    return rx.fragment(
         rx.box(
-            navbar(),
-            class_name=Color.GRADIENT_NAVBAR,
-            padding_y=Size.XS.value,
-            padding_x=Size.SMALL.value,
-            width="100%",
-        ),
-        rx.box(
-            rx.vstack(
-                pack_options_grid(),
-                rx.cond(
-                    FormBaseState.code_locked,
-                    rx.box(
-                        rx.text(
-                            f"Reserva con código {FormBaseState.reservation_code} cargada. "
-                            "Elige tu pack para continuar.",
-                            weight="bold",
-                            color=Color.PURPLE_DARK,
-                        ),
-                        padding=Size.SMALL.value,
-                        border_radius=BorderRadius.SMALL,
-                        background_color=Color.CARD_PINK,
-                    ),
-                    rx.fragment(),
-                ),
-                spacing="7",
-                align="center",
+            rx.box(
+                navbar(),
+                class_name=Color.GRADIENT_NAVBAR,
+                padding_y=Size.XS.value,
+                padding_x=Size.SMALL.value,
                 width="100%",
-                padding_y=Size.LARGE.value,
             ),
+            rx.box(
+                rx.vstack(
+                    pack_options_grid(),
+                    rx.cond(
+                        FormBaseState.code_locked,
+                        rx.box(
+                            rx.text(
+                                f"Reserva con código {FormBaseState.reservation_code} cargada. "
+                                "Elige tu pack para continuar.",
+                                weight="bold",
+                                color=Color.PURPLE_DARK,
+                            ),
+                            padding=Size.SMALL.value,
+                            border_radius=BorderRadius.SMALL,
+                            background_color=Color.CARD_PINK,
+                        ),
+                        rx.fragment(),
+                    ),
+                    spacing="7",
+                    align="center",
+                    width="100%",
+                    padding_y=Size.LARGE.value,
+                ),
+                width="100%",
+                flex_grow="1",
+                display="flex",
+                align_items="center",
+                justify_content="center",
+            ),
+            rx.box(
+                footer(),
+                class_name=Color.GRADIENT_NAVBAR,
+                padding_y=Size.MEDIUM.value,
+                width="100%",
+                margin_top="auto",
+            ),
+            min_height="100vh",
             width="100%",
-            flex_grow="1",
             display="flex",
-            align_items="center",
-            justify_content="center",
+            flex_direction="column",
+            background_color=Color.PAGE_BG,
+            on_mount=FormBaseState.ensure_order_access,
         ),
-        rx.box(
-            footer(),
-            class_name=Color.GRADIENT_NAVBAR,
-            padding_y=Size.MEDIUM.value,
+        conditions_modal(),
+    )
+
+
+def conditions_modal() -> rx.Component:
+    """Modal de condiciones obligatorio antes de seleccionar pack.
+
+    Solo se muestra si el cliente no las ha aceptado aún (llega con el
+    enlace directo que ya trae el código). No se puede cerrar sin aceptar.
+    """
+    return rx.dialog.root(
+        rx.dialog.content(
+            rx.dialog.title(
+                "Condiciones del cumpleaños",
+                color=Color.PURPLE_DARK,
+            ),
+            rx.text(
+                "Debes aceptar las condiciones para poder continuar con tu pedido.",
+                color=Color.PURPLE,
+                font_size=FontSize.SMALL,
+                margin_bottom="1rem",
+            ),
+            rx.box(
+                rx.vstack(
+                    *[
+                        rx.hstack(
+                            rx.icon(tag="check", color=Color.PURPLE, size=16),
+                            rx.text(
+                                cond,
+                                font_size=FontSize.SMALL,
+                                color=Color.PURPLE_DARK,
+                            ),
+                            align_items="flex-start",
+                            spacing="2",
+                        )
+                        for cond in CONDITIONS
+                    ],
+                    spacing="2",
+                    align_items="stretch",
+                    width="100%",
+                ),
+                max_height="50vh",
+                overflow_y="auto",
+                padding_right="0.5rem",
+                margin_bottom="1rem",
+            ),
+            rx.checkbox(
+                rx.text(
+                    "He leído y acepto las condiciones.",
+                    color=Color.PURPLE_DARK,
+                    font_weight="600",
+                ),
+                checked=State.conditions_checked,
+                on_change=State.set_conditions_checked,
+                color_scheme="purple",
+            ),
+            rx.hstack(
+                rx.button(
+                    "Aceptar y continuar",
+                    on_click=State.accept_conditions,
+                    disabled=~State.conditions_checked,
+                    background_color=Color.PURPLE,
+                    color=Color.WHITE,
+                    font_weight="700",
+                    border_radius=BorderRadius.FULL,
+                    width="100%",
+                    _disabled={"opacity": 0.5, "cursor": "not-allowed"},
+                    _hover={"background_color": Color.PURPLE_DARK},
+                ),
+                width="100%",
+                margin_top="1rem",
+            ),
+            rx.text(
+                rx.link(
+                    "Volver al inicio",
+                    href=Routes.INDEX.value,
+                    color=Color.PINK,
+                ),
+                align="center",
+                margin_top="0.75rem",
+                font_size=FontSize.SMALL,
+            ),
+            background_color=Color.WHITE,
+            padding="1.5rem",
+            border_radius="1rem",
+            max_width="36rem",
             width="100%",
-            margin_top="auto",
         ),
-        min_height="100vh",
-        width="100%",
-        display="flex",
-        flex_direction="column",
-        background_color=Color.PAGE_BG,
-        on_mount=FormBaseState.ensure_order_access,
+        open=~State.conditions_acepted,
+        modal=True,
     )
 
 
@@ -79,7 +172,7 @@ def main_title() -> rx.Component:
     )
 
 
-def _create_pack_card(title: str, price: int, num_people: int, image_src: str, on_click_action: str | None = None) -> rx.Component:
+def _create_pack_card(title: str, price: int, num_people: int, image_src: str, on_click_action: str | None = None, delay: str = "0s") -> rx.Component:
     # Si el código de reserva viene del enlace de WhatsApp, se arrastra al
     # formulario del pack para que el cliente no tenga que volver a teclearlo.
     href = on_click_action if on_click_action else "#"
@@ -139,8 +232,10 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
         variant="surface",
         border_radius=BorderRadius.CARD,
         width="100%",
-        _hover={"box_shadow": "0px 6px 12px rgba(0,0,0,0.15)"},
-        transition=Transition.SHADOW,
+        box_shadow=Shadow.CARD,
+        transition=Transition.CARD,
+        class_name="card-hover",
+        style={"animation_delay": delay},
     )
 
 
@@ -157,17 +252,18 @@ def pack_options_grid() -> rx.Component:
                         price=pack["price"],
                         num_people=pack["num_people"],
                         image_src=pack["image_src"],
-                        on_click_action=pack["on_click"]
+                        on_click_action=pack["on_click"],
+                        delay=f"{i * 0.15}s",
                     )
-                    for pack in PACK_OPTIONS_DATA
+                    for i, pack in enumerate(PACK_OPTIONS_DATA)
                 ],
-                columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"), # Columnas responsivas
-                spacing="7", # Espaciado entre cards
+                columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"),
+                spacing="7",
                 width="100%",
-                max_width="1200px", # Pero se limita a 1200px
-                padding=Size.MEDIUM.value, # Padding dentro del grid
+                max_width="1200px",
+                padding=Size.MEDIUM.value,
             ),
-            width="100%", # El center ocupa todo el ancho disponible para poder centrar el grid
+            width="100%",
         ),
         direction="column"
     )

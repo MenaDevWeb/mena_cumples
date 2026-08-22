@@ -5,6 +5,7 @@ config = rx.Config(
     api_url="http://localhost:8000",
     show_built_with_reflex=False,
     plugins=[
+        rx.plugins.RadixThemesPlugin(),
         rx.plugins.TailwindV3Plugin(),
         rx.plugins.sitemap.SitemapPlugin(),
     ],    
