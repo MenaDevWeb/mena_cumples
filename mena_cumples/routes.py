@@ -9,4 +9,5 @@ class Routes(Enum):
     PACK_20_PAX = "/pack_20_pax"
     PACK_25_PAX = "/pack_25_pax"
     PACK_30_PAX = "/pack_30_pax"
+    PACK_MEDIODOIA = "/pack_mediodia"
     CONTACT_FORM_PAGE = "/contact_form_page"

@@ -7,6 +7,6 @@ config = rx.Config(
     plugins=[
         rx.plugins.RadixThemesPlugin(),
         rx.plugins.TailwindV3Plugin(),
-        rx.plugins.sitemap.SitemapPlugin(),
-    ],    
+        rx.plugins.SitemapPlugin(),
+    ],
 )

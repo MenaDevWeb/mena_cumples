@@ -240,28 +240,396 @@ def _create_pack_card(title: str, price: int, num_people: int, image_src: str, o
 
 
 
+def _tipo_cumple_selector() -> rx.Component:
+    """Selector Cumple Mediodía vs Tarde — mismo pack/precio, distinta carta/horario."""
+    return rx.box(
+        rx.vstack(
+            rx.text(
+                "Elige tipo de cumple",
+                weight="bold",
+                size="5",
+                color=Color.PURPLE_DARK,
+                align="center",
+            ),
+            rx.text(
+                "Mismo precio. Mediodía usa menú con bebida (13:00-15:00). Tarde usa pizzas/roscas (16:00-19:00).",
+                size="2",
+                color=Color.PURPLE,
+                align="center",
+                style={"font_style": "italic"},
+            ),
+            rx.hstack(
+                rx.button(
+                    rx.hstack(
+                        rx.icon(tag="sun", size=18),
+                        rx.text("Cumple Mediodía"),
+                        rx.text("13:00-15:00", size="1", color=Color.PURPLE_DARK),
+                        spacing="2",
+                        align="center",
+                    ),
+                    on_click=lambda: FormBaseState.set_cumple_tipo("Cumple Mediodía"),
+                    variant=rx.cond(
+                        FormBaseState.cumple_tipo == "Cumple Mediodía",
+                        "solid",
+                        "outline",
+                    ),
+                    color_scheme=rx.cond(
+                        FormBaseState.cumple_tipo == "Cumple Mediodía",
+                        "amber",
+                        "gray",
+                    ),
+                    size="3",
+                    style={"flex": "1"},
+                ),
+                rx.button(
+                    rx.hstack(
+                        rx.icon(tag="moon", size=18),
+                        rx.text("Cumple Tarde"),
+                        rx.text("16:00-19:00", size="1", color=Color.PURPLE_DARK),
+                        spacing="2",
+                        align="center",
+                    ),
+                    on_click=lambda: FormBaseState.set_cumple_tipo("Cumple Tarde"),
+                    variant=rx.cond(
+                        FormBaseState.cumple_tipo == "Cumple Tarde",
+                        "solid",
+                        "outline",
+                    ),
+                    color_scheme=rx.cond(
+                        FormBaseState.cumple_tipo == "Cumple Tarde",
+                        "cyan",
+                        "gray",
+                    ),
+                    size="3",
+                    style={"flex": "1"},
+                ),
+                spacing="4",
+                width="100%",
+                margin_top="0.75rem",
+            ),
+            rx.box(
+                rx.cond(
+                    FormBaseState.cumple_tipo == "Cumple Mediodía",
+                    rx.hstack(
+                        rx.icon(tag="info", size=16, color="#b45309"),
+                        rx.text(
+                            "Has elegido Cumple Mediodía. El formulario mostrará menú (4 opciones) con cantidad + nota por producto.",
+                            size="2",
+                            color="#92400e",
+                        ),
+                        spacing="2",
+                        align="center",
+                    ),
+                    rx.hstack(
+                        rx.icon(tag="info", size=16, color="#0891b2"),
+                        rx.text(
+                            "Has elegido Cumple Tarde. El formulario mostrará bocadillos, pizzas/roscas y bebidas.",
+                            size="2",
+                            color="#0e7490",
+                        ),
+                        spacing="2",
+                        align="center",
+                    ),
+                ),
+                margin_top="0.5rem",
+                padding="0.6rem 0.8rem",
+                background_color=rx.cond(
+                    FormBaseState.cumple_tipo == "Cumple Mediodía",
+                    "#fffbeb",
+                    "#ecfeff",
+                ),
+                border_radius="0.5rem",
+                width="100%",
+            ),
+            spacing="2",
+            width="100%",
+        ),
+        padding="1rem",
+        background_color=Color.WHITE,
+        border_radius=BorderRadius.MEDIUM,
+        border=f"1px solid {Color.GRAY_BORDER}",
+        box_shadow=Shadow.CARD,
+        max_width="800px",
+        width="100%",
+        margin_bottom="1rem",
+    )
+
+
+def _create_mediodia_pack_card(pack: dict, index: int) -> rx.Component:
+    """Card para Cumple Mediodía — mismo precio que tarde pero con menú + nota por producto."""
+    # href con tipo=mediodia para que init_pack_page preseleccione Cumple Mediodía
+    base_href = pack["on_click"]
+    href_tarde = rx.cond(
+        FormBaseState.code_locked,
+        f"{base_href}?codigo={FormBaseState.reservation_code}",
+        base_href,
+    )
+    href_mediodia = rx.cond(
+        FormBaseState.code_locked,
+        f"{base_href}?codigo={FormBaseState.reservation_code}&tipo=mediodia",
+        f"{base_href}?tipo=mediodia",
+    )
+    # Usamos href_mediodia para esta variante
+    button = rx.link(
+        rx.button(
+            rx.hstack(
+                rx.icon(tag="sun", size=16),
+                rx.text("Mediodía"),
+                spacing="1",
+                align="center",
+            ),
+            variant="solid",
+            color_scheme="amber",
+            width="100%",
+        ),
+        href=href_mediodia,
+        is_external=False,
+        width="90%",
+        margin_top=Size.SMALL.value,
+        margin_bottom=Size.SMALL.value,
+        style={"text_decoration": "none"},
+    )
+    return rx.card(
+        rx.vstack(
+            rx.box(
+                rx.image(
+                    src="/packs_image.webp",
+                    width="100%",
+                    height="200px",
+                    object_fit="cover",
+                    border_radius="10px 10px 0 0",
+                ),
+                rx.box(
+                    rx.hstack(
+                        rx.icon(tag="sun", size=14, color="white"),
+                        rx.text("MEDIODÍA", size="1", weight="bold", color="white"),
+                        rx.text("13:00-15:00", size="1", color="white"),
+                        spacing="1",
+                        align="center",
+                    ),
+                    position="absolute",
+                    top="10px",
+                    left="10px",
+                    background_color="#f59e0b",
+                    padding="0.3rem 0.6rem",
+                    border_radius="9999px",
+                ),
+                position="relative",
+                width="100%",
+            ),
+            rx.text(
+                f"PACK DE {pack['num_people']} PERSONAS",
+                weight="bold",
+                align="center",
+                size="5",
+                margin_top="0.5rem",
+            ),
+            rx.text(
+                "Menú a elegir + bebida incluida",
+                size="2",
+                color="#92400e",
+                align="center",
+                style={"font_style": "italic"},
+            ),
+            rx.vstack(
+                rx.text(f"{pack['price']}€", weight="bold", size="6", color="#f59e0b"),
+                spacing="1",
+                align="center",
+                padding_y="0.5rem",
+            ),
+            button,
+            spacing="2",
+            align="center",
+            width="100%",
+        ),
+        variant="surface",
+        border_radius=BorderRadius.CARD,
+        width="100%",
+        box_shadow=Shadow.CARD,
+        transition=Transition.CARD,
+        class_name="card-hover",
+        style={"animation_delay": f"{index * 0.15}s", "border": "2px solid #fde68a"},
+    )
+
+
+def _create_mediodia_single_card() -> rx.Component:
+    """1 pack único Mediodía — mismo tamaño que packs Tarde, con menú + nota."""
+    mediodia_href = rx.cond(
+        FormBaseState.code_locked,
+        f"{Routes.PACK_MEDIODOIA.value}?codigo={FormBaseState.reservation_code}&tipo=mediodia",
+        f"{Routes.PACK_MEDIODOIA.value}?tipo=mediodia",
+    )
+    return rx.card(
+        rx.vstack(
+            rx.box(
+                rx.image(
+                    src="/packs_image.webp",
+                    width="100%",
+                    height="200px",
+                    object_fit="cover",
+                    border_radius="10px 10px 0 0",
+                ),
+                rx.box(
+                    rx.hstack(
+                        rx.icon(tag="sun", size=14, color="white"),
+                        rx.text("MEDIODÍA", size="1", weight="bold", color="white"),
+                        rx.text("13:00-15:00", size="1", color="white"),
+                        spacing="1",
+                        align="center",
+                    ),
+                    position="absolute",
+                    top="10px",
+                    left="10px",
+                    background_color="#f59e0b",
+                    padding="0.3rem 0.6rem",
+                    border_radius="9999px",
+                ),
+                position="relative",
+                width="100%",
+            ),
+            rx.text(
+                "PACK MEDIODÍA",
+                weight="bold",
+                align="center",
+                size="5",
+                margin_top="0.5rem",
+            ),
+            rx.text(
+                "Menú a elegir + bebida incluida",
+                size="2",
+                color="#92400e",
+                align="center",
+                style={"font_style": "italic"},
+            ),
+            rx.vstack(
+                rx.text("4 menús · con nota por producto", size="2", color=Color.PURPLE_DARK, align="center"),
+                spacing="1",
+                align="center",
+                padding_y="0.5rem",
+            ),
+            rx.vstack(
+                rx.text("5,90€", weight="bold", size="6", color="#f59e0b"),
+                rx.text("por niño", size="2", color=Color.PURPLE_DARK),
+                spacing="1",
+                align="center",
+            ),
+            rx.link(
+                rx.button(
+                    rx.text("Selecciona"),
+                    variant="surface",
+                    color_scheme="plum",
+                    width="100%",
+                ),
+                href=mediodia_href,
+                is_external=False,
+                width="90%",
+                margin_top=Size.SMALL.value,
+                margin_bottom=Size.SMALL.value,
+                style={"text_decoration": "none"},
+            ),
+            spacing="2",
+            align="center",
+            width="100%",
+        ),
+        variant="surface",
+        border_radius=BorderRadius.CARD,
+        width="100%",
+        box_shadow=Shadow.CARD,
+        transition=Transition.CARD,
+        class_name="card-hover",
+        style={"animation_delay": "0.6s"},
+    )
+
+
 def pack_options_grid() -> rx.Component:
-    """Crea el grid de cards para los packs."""
+    """Crea el grid de cards para los packs — Tarde y Mediodía con mismo precio."""
     return rx.center(
         rx.vstack(
             main_title(),
-            rx.grid(
-                *[
-                    _create_pack_card(
-                        title=pack["title"],
-                        price=pack["price"],
-                        num_people=pack["num_people"],
-                        image_src=pack["image_src"],
-                        on_click_action=pack["on_click"],
-                        delay=f"{i * 0.15}s",
-                    )
-                    for i, pack in enumerate(PACK_OPTIONS_DATA)
-                ],
-                columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"),
-                spacing="7",
+            # --- Cumple Tarde (16:00-19:00) ---
+            rx.vstack(
+                rx.hstack(
+                    rx.icon(tag="moon", size=20, color=Color.PURPLE),
+                    rx.heading(
+                        "Cumple Tarde",
+                        size="6",
+                        color=Color.PURPLE_DARK,
+                        weight="bold",
+                    ),
+                    rx.text(
+                        "16:00-19:00 · Pizzas/roscas + bebidas",
+                        size="2",
+                        color=Color.PURPLE,
+                        style={"font_style": "italic"},
+                    ),
+                    spacing="2",
+                    align="center",
+                    justify="center",
+                    width="100%",
+                ),
+                rx.grid(
+                    *[
+                        _create_pack_card(
+                            title=pack["title"],
+                            price=pack["price"],
+                            num_people=pack["num_people"],
+                            image_src=pack["image_src"],
+                            on_click_action=pack["on_click"],
+                            delay=f"{i * 0.15}s",
+                        )
+                        for i, pack in enumerate(PACK_OPTIONS_DATA)
+                    ],
+                    columns=rx.breakpoints(initial="1", sm="2", md="2", lg="4"),
+                    spacing="7",
+                    width="100%",
+                    max_width="1200px",
+                    padding=Size.SMALL.value,
+                ),
+                spacing="3",
                 width="100%",
-                max_width="1200px",
-                padding=Size.MEDIUM.value,
+                align="center",
+            ),
+            rx.divider(margin_y="1rem", width="100%", max_width="1200px"),
+            # --- Cumple Mediodía (13:00-15:00) ---
+            rx.vstack(
+                rx.hstack(
+                    rx.icon(tag="sun", size=20, color="#f59e0b"),
+                    rx.heading(
+                        "Cumple Mediodía",
+                        size="6",
+                        color="#92400e",
+                        weight="bold",
+                    ),
+                    rx.text(
+                        "13:00-15:00 · Menú + bebida (con nota por producto)",
+                        size="2",
+                        color="#b45309",
+                        style={"font_style": "italic"},
+                    ),
+                    spacing="2",
+                    align="center",
+                    justify="center",
+                    width="100%",
+                ),
+                rx.text(
+                    "Mismo precio que Tarde. Cada menú incluye patatas + 1 bebida. Límite = nº personas del pack. Extras y repostería iguales.",
+                    size="2",
+                    color="#92400e",
+                    align="center",
+                    max_width="800px",
+                ),
+                rx.center(
+                    rx.box(
+                        _create_mediodia_single_card(),
+                        max_width="320px",
+                        width="100%",
+                    ),
+                    width="100%",
+                    padding=Size.SMALL.value,
+                ),
+                spacing="3",
+                width="100%",
+                align="center",
             ),
             width="100%",
         ),

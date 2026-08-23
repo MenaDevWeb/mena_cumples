@@ -7,6 +7,7 @@ from .pages.pack_15_page import pack_15
 from .pages.pack_20_page import pack_20
 from .pages.pack_25_page import pack_25
 from .pages.pack_30_page import pack_30
+from .pages.pack_mediodia_page import pack_mediodia
 from .pages.packs_information_page import packs_information
 from .styles.styles import style, Color, FontSize, BorderRadius, Shadow, Transition, Size
 from .components.navbar import navbar

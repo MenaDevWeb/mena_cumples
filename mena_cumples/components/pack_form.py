@@ -264,32 +264,45 @@ def _missing_notice() -> rx.Component:
         rx.box(
             rx.hstack(
                 rx.icon(tag="circle-alert", color=Color.WARNING, size=20),
-                rx.text(
-                    "Falta",
-                    rx.cond(
-                        FormBaseState.total_missing == 1,
-                        rx.fragment(" 1 elemento "),
-                        rx.fragment(f" {FormBaseState.total_missing} elementos "),
-                    ),
-                    "por seleccionar: ",
-                    rx.cond(
-                        FormBaseState.missing_pizza_rosca > 0,
-                        rx.el.span(
-                            f"{FormBaseState.missing_pizza_rosca} pizza/rosca ",
-                            style={"color": Color.ERROR, "font_weight": "600"},
+                rx.cond(
+                    FormBaseState.cumple_tipo == "Cumple Mediodía",
+                    rx.text(
+                        rx.cond(
+                            FormBaseState.total_missing == 1,
+                            rx.fragment(" Falta 1 menú "),
+                            rx.fragment(f" Faltan {FormBaseState.total_missing} menús "),
                         ),
-                        rx.fragment(),
+                        f" por seleccionar (quedan {FormBaseState.missing_menu_mediodia})",
+                        font_size="0.95rem",
+                        color=Color.PURPLE_DARK,
                     ),
-                    rx.cond(
-                        FormBaseState.missing_drinks > 0,
-                        rx.el.span(
-                            f"{FormBaseState.missing_drinks} bebida",
-                            style={"color": Color.ERROR, "font_weight": "600"},
+                    rx.text(
+                        "Falta",
+                        rx.cond(
+                            FormBaseState.total_missing == 1,
+                            rx.fragment(" 1 elemento "),
+                            rx.fragment(f" {FormBaseState.total_missing} elementos "),
                         ),
-                        rx.fragment(),
+                        "por seleccionar: ",
+                        rx.cond(
+                            FormBaseState.missing_pizza_rosca > 0,
+                            rx.el.span(
+                                f"{FormBaseState.missing_pizza_rosca} pizza/rosca ",
+                                style={"color": Color.ERROR, "font_weight": "600"},
+                            ),
+                            rx.fragment(),
+                        ),
+                        rx.cond(
+                            FormBaseState.missing_drinks > 0,
+                            rx.el.span(
+                                f"{FormBaseState.missing_drinks} bebida",
+                                style={"color": Color.ERROR, "font_weight": "600"},
+                            ),
+                            rx.fragment(),
+                        ),
+                        font_size="0.95rem",
+                        color=Color.PURPLE_DARK,
                     ),
-                    font_size="0.95rem",
-                    color=Color.PURPLE_DARK,
                 ),
                 spacing="2",
                 align_items="center",
@@ -303,6 +316,137 @@ def _missing_notice() -> rx.Component:
             width="100%",
         ),
         rx.fragment(),
+    )
+
+
+def _menu_mediodia_section() -> rx.Component:
+    """Sección Cumple Mediodía: cantidad por menú + nota por producto. Precio 5,90€/niño."""
+    return rx.vstack(
+        rx.hstack(
+            rx.text(
+                "Menú Mediodía (cada uno incluye patatas + 1 bebida)",
+                weight="bold",
+                color="#92400e",
+                size="3",
+            ),
+            rx.spacer(),
+            rx.badge(
+                f"{FormBaseState.menu_mediodia_total} niños",
+                color_scheme="amber",
+                variant="soft",
+                size="2",
+            ),
+            width="100%",
+            align_items="center",
+        ),
+        rx.text(
+            f"5,90€ por niño · Total: {FormBaseState.menu_mediodia_total} × 5,90€ = {FormBaseState.menu_mediodia_price_total:.2f}€",
+            size="2",
+            color="#b45309",
+            weight="medium",
+        ),
+        rx.vstack(
+            rx.vstack(
+                _option_row(
+                    FormBaseState.menu_mediodia_selected["Nuggets de pollo con patata + 1 bebida"].to_string(),
+                    lambda v: FormBaseState.update_menu_mediodia("Nuggets de pollo con patata + 1 bebida", v),
+                    "Nuggets de pollo con patata + 1 bebida",
+                    max_length=2,
+                ),
+                rx.input(
+                    placeholder="Nota ej: Sin lechuga, sin tomate / solo carne",
+                    value=FormBaseState.menu_mediodia_notes["Nuggets de pollo con patata + 1 bebida"],
+                    on_change=lambda v: FormBaseState.update_menu_mediodia_note("Nuggets de pollo con patata + 1 bebida", v),
+                    width="100%",
+                    background_color=Color.WHITE,
+                    border="1px solid #fcd34d",
+                    border_radius="0.5rem",
+                    font_size="13px",
+                ),
+                spacing="1",
+                width="100%",
+                padding="0.5rem",
+                background_color="#fffbeb",
+                border_radius="0.5rem",
+                border="1px solid #fde68a",
+            ),
+            rx.vstack(
+                _option_row(
+                    FormBaseState.menu_mediodia_selected["Hamburguesa con patatas + 1 bebida"].to_string(),
+                    lambda v: FormBaseState.update_menu_mediodia("Hamburguesa con patatas + 1 bebida", v),
+                    "Hamburguesa con patatas + 1 bebida",
+                    max_length=2,
+                ),
+                rx.input(
+                    placeholder="Nota ej: Sin lechuga, sin tomate / punto de la carne",
+                    value=FormBaseState.menu_mediodia_notes["Hamburguesa con patatas + 1 bebida"],
+                    on_change=lambda v: FormBaseState.update_menu_mediodia_note("Hamburguesa con patatas + 1 bebida", v),
+                    width="100%",
+                    background_color=Color.WHITE,
+                    border="1px solid #fcd34d",
+                    border_radius="0.5rem",
+                    font_size="13px",
+                ),
+                spacing="1",
+                width="100%",
+                padding="0.5rem",
+                background_color="#fffbeb",
+                border_radius="0.5rem",
+                border="1px solid #fde68a",
+            ),
+            rx.vstack(
+                _option_row(
+                    FormBaseState.menu_mediodia_selected["Sandwich mixto con patatas + 1 bebida"].to_string(),
+                    lambda v: FormBaseState.update_menu_mediodia("Sandwich mixto con patatas + 1 bebida", v),
+                    "Sandwich mixto con patatas + 1 bebida",
+                    max_length=2,
+                ),
+                rx.input(
+                    placeholder="Nota ej: Sin mayonesa / con queso",
+                    value=FormBaseState.menu_mediodia_notes["Sandwich mixto con patatas + 1 bebida"],
+                    on_change=lambda v: FormBaseState.update_menu_mediodia_note("Sandwich mixto con patatas + 1 bebida", v),
+                    width="100%",
+                    background_color=Color.WHITE,
+                    border="1px solid #fcd34d",
+                    border_radius="0.5rem",
+                    font_size="13px",
+                ),
+                spacing="1",
+                width="100%",
+                padding="0.5rem",
+                background_color="#fffbeb",
+                border_radius="0.5rem",
+                border="1px solid #fde68a",
+            ),
+            rx.vstack(
+                _option_row(
+                    FormBaseState.menu_mediodia_selected["Pasta con tomate o aceite + 1 bebida"].to_string(),
+                    lambda v: FormBaseState.update_menu_mediodia("Pasta con tomate o aceite + 1 bebida", v),
+                    "Pasta con tomate o aceite + 1 bebida",
+                    max_length=2,
+                ),
+                rx.input(
+                    placeholder="Nota ej: Con tomate / solo con aceite",
+                    value=FormBaseState.menu_mediodia_notes["Pasta con tomate o aceite + 1 bebida"],
+                    on_change=lambda v: FormBaseState.update_menu_mediodia_note("Pasta con tomate o aceite + 1 bebida", v),
+                    width="100%",
+                    background_color=Color.WHITE,
+                    border="1px solid #fcd34d",
+                    border_radius="0.5rem",
+                    font_size="13px",
+                ),
+                spacing="1",
+                width="100%",
+                padding="0.5rem",
+                background_color="#fffbeb",
+                border_radius="0.5rem",
+                border="1px solid #fde68a",
+            ),
+            spacing="2",
+            width="100%",
+        ),
+        spacing="2",
+        width="100%",
     )
 
 
@@ -366,6 +510,7 @@ def pack_form(
     observation_selected_value: str = "",
     max_allowed: int = 3
 ) -> rx.Component:
+    # Pack Tarde dedicado — sin selector tipo, solo tarde
     return rx.fragment(
         _alert_dialog(),
         rx.el.form(
@@ -442,6 +587,89 @@ def pack_form(
     )
 
 
+
+def pack_form_mediodia(
+    image_url: str = "",
+    pack_description: str = "",
+    name_title: str = "",
+    date_time: str = "",
+    time_description: str = "",
+    bakery_title: str = "",
+    bakery_options: list[str] = [],
+    observation_title: str = "",
+) -> rx.Component:
+    """Vista 100% dedicada a Cumple Mediodía — sin selector tipo, totalmente personalizada."""
+    return rx.fragment(
+        _alert_dialog(),
+        rx.el.form(
+            rx.el.div(
+                _header_card(image_url, pack_description),
+                _section_card(
+                    "Tu reserva",
+                    _reserva_content(),
+                    icon_tag="ticket",
+                    bg_color=Color.CARD_PINK,
+                ),
+                _section_card(
+                    "Datos del cumpleañero",
+                    datos_personales(name_title, "", "", date_time, time_description, ""),
+                    icon_tag="user",
+                ),
+                _section_card(
+                    "Menú Mediodía — 5,90€ por niño",
+                    rx.vstack(
+                        rx.text(
+                            "Elige cantidad por menú. Cada uno incluye patatas + 1 bebida. Añade nota por producto.",
+                            size="2",
+                            color=Color.PURPLE_DARK,
+                            style={"font_style": "italic"},
+                        ),
+                        _menu_mediodia_section(),
+                        spacing="2",
+                        width="100%",
+                    ),
+                    icon_tag="utensils",
+                    bg_color="#fffbeb",
+                ),
+                _extras_toggle(),
+                rx.cond(
+                    FormBaseState.show_extras,
+                    _section_card(
+                        "Extras",
+                        seleccion_extras(
+                            FormBaseState.extra_pizza_selected,
+                            FormBaseState.extra_rosca_selected,
+                            FormBaseState.extra_drink_selected,
+                            FormBaseState.candy_count,
+                        ),
+                        icon_tag="sparkles",
+                        bg_color=Color.CARD_EXTRAS,
+                    ),
+                ),
+                _section_card(
+                    "Repostería y Observaciones",
+                    extras_y_observaciones(
+                        "", "", "", bakery_title, bakery_options, observation_title, "",
+                    ),
+                    icon_tag="cake",
+                ),
+                _missing_notice(),
+                _submit_button(),
+                width="100%",
+                align="center",
+            ),
+            on_submit=FormBaseState.send_whatsapp_message,
+            reset_on_submit=True,
+            class_name="max-w-3xl mx-auto my-8 p-4 md:p-6",
+            style={
+                "background": "linear-gradient(180deg, #FFFFFF 0%, #F7F4FA 100%)",
+                "border_radius": "1.5rem",
+                "box_shadow": Shadow.FORM,
+            },
+        )
+    )
+
+
 # Función para la sección de datos personales
 def datos_personales(name_title, child_name_value, child_age_value, date_time, time_description, birth_date_value):
     return rx.vstack(
@@ -459,13 +687,13 @@ def datos_personales(name_title, child_name_value, child_age_value, date_time, t
                 flex="1 1 200px",
                 min_width="150px",
             ),
-            rx.input(
-                placeholder="Edad",
+            rx.select(
+                FormBaseState.AGE_OPTIONS,
                 value=child_age_value,
-                on_change=lambda new_value: FormBaseState.update_field("child_age", new_value),
+                on_change=lambda v: FormBaseState.update_field("child_age", v),
+                placeholder="Edad 1-12",
                 height="40px",
                 font_size="16px",
-                type="number",
                 background_color=Color.WHITE,
                 border="1px solid rgba(124, 58, 237, 0.25)",
                 border_radius="0.5rem",
@@ -484,19 +712,20 @@ def datos_personales(name_title, child_name_value, child_age_value, date_time, t
                 type="date",
                 value=birth_date_value,
                 on_change=lambda new_value: FormBaseState.update_field("birth_date", new_value),
+                is_disabled=FormBaseState.birth_date_locked,
                 height="40px",
                 font_size="16px",
-                background_color=Color.WHITE,
+                background_color=rx.cond(FormBaseState.birth_date_locked, "#f1f5f9", Color.WHITE),
                 border="1px solid rgba(124, 58, 237, 0.25)",
                 border_radius="0.5rem",
                 flex="1 1 180px",
                 min_width="150px",
             ),
             rx.select(
-                ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"],
+                FormBaseState.birth_times_options,
                 name="birth_time",
                 placeholder="Hora",
-                on_change=lambda new_value: FormBaseState.update_field("birth_time", new_value),
+                on_change=FormBaseState.set_birth_time,
                 size="3",
                 value=FormBaseState.birth_time,
                 height="40px",
@@ -738,21 +967,47 @@ def aceptar_condiciones():
 # Función para seleccionar el pack
 def select_pack_component():
     return rx.vstack(
-        rx.select.root(
-            rx.select.trigger(placeholder="Selecciona un pack", width="100%"),
-            rx.select.content(
-                rx.select.item("Pack 15", value="Pack_15"),
-                rx.select.item("Pack 20", value="Pack_20"),
-                rx.select.item("Pack 25", value="Pack_25"),
-                rx.select.item("Pack 30", value="Pack_30"),
+        rx.cond(
+            FormBaseState.cumple_tipo == "Cumple Mediodía",
+            rx.box(
+                rx.text(
+                    "Pack Mediodía — 5,90€ por niño",
+                    weight="bold",
+                    color="#92400e",
+                    align="center",
+                ),
+                rx.text(
+                    f"{FormBaseState.menu_mediodia_total} niños × 5,90€ = {FormBaseState.menu_mediodia_price_total:.2f}€",
+                    size="2",
+                    color="#b45309",
+                    align="center",
+                ),
+                padding="0.75rem",
+                background_color="#fffbeb",
+                border="1px solid #fde68a",
+                border_radius="0.5rem",
+                width="100%",
             ),
-            on_change=lambda value: FormBaseState.select_pack(value),
-            width="100%",
+            rx.vstack(
+                rx.select.root(
+                    rx.select.trigger(placeholder="Selecciona un pack", width="100%"),
+                    rx.select.content(
+                        rx.select.item("Pack 15", value="Pack_15"),
+                        rx.select.item("Pack 20", value="Pack_20"),
+                        rx.select.item("Pack 25", value="Pack_25"),
+                        rx.select.item("Pack 30", value="Pack_30"),
+                    ),
+                    on_change=lambda value: FormBaseState.select_pack(value),
+                    width="100%",
+                ),
+                rx.text(
+                    "Máximo permitido: {FormBaseState.max_allowed_pizza_rosca}",
+                    key="max_allowed_text",
+                ),
+                width="100%",
+            ),
         ),
-        rx.text(
-            "Máximo permitido: {FormBaseState.max_allowed_pizza_rosca}",
-            key="max_allowed_text",
-        ),
+        width="100%",
     )
 
 

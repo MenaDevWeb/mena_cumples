@@ -37,6 +37,8 @@ class FormBaseState(rx.State):
     # Código de reserva cargado desde el enlace de WhatsApp (?codigo=CUM-XXXX).
     # code_locked bloquea el campo para que el cliente no pueda modificar el código.
     code_locked: bool = False
+    birth_date_locked: bool = False
+    AGE_OPTIONS: list[str] = [str(i) for i in range(1, 13)]
 
     @rx.event
     async def ensure_order_access(self):
@@ -45,6 +47,7 @@ class FormBaseState(rx.State):
         Solo se puede entrar a seleccionar pack o rellenar el formulario si la
         URL trae un código de reserva REAL (?codigo=CUM-XXXX) existente en la
         base de datos. Si no hay código o no es válido, se redirige al inicio.
+        Además fija fecha si viene ?fecha=YYYY-MM-DD del hotel para evitar que el cliente la cambie.
         """
         from mena_cumples.supabase_utils import verificar_codigo_reserva
 
@@ -53,6 +56,10 @@ class FormBaseState(rx.State):
             return rx.redirect(Routes.INDEX.value)
         self.reservation_code = codigo
         self.code_locked = True
+        fecha = (self.router.url.query_parameters.get("fecha") or "").strip()
+        if fecha:
+            self.birth_date = fecha
+            self.birth_date_locked = True
 
     @rx.event
     async def init_pack_page(self, pack_type: str):
@@ -60,15 +67,32 @@ class FormBaseState(rx.State):
 
         Si la URL no trae un código de reserva válido (existente en la base de
         datos), redirige al inicio (candado de acceso).
+        Lee ?tipo=mediodia para preseleccionar Cumple Mediodía (cards de pack_selection).
         """
         from mena_cumples.supabase_utils import verificar_codigo_reserva
 
         codigo = (self.router.url.query_parameters.get("codigo") or "").strip().upper()
         if not codigo or not await asyncio.to_thread(verificar_codigo_reserva, codigo):
             return rx.redirect(Routes.INDEX.value)
+        # Preselección tipo desde pack_selection (?tipo=mediodia) o pack dedicado
+        tipo_raw = (self.router.url.query_parameters.get("tipo") or "").strip().lower()
+        if pack_type == "Pack_Mediodia" or "mediod" in tipo_raw:
+            self.cumple_tipo = "Cumple Mediodía"
+        else:
+            self.cumple_tipo = "Cumple Tarde"
+        if self.cumple_tipo == "Cumple Mediodía" and self.birth_time not in self.BIRTH_TIMES_MEDIODOIA:
+            self.birth_time = ""
+        elif self.cumple_tipo == "Cumple Tarde" and self.birth_time not in self.BIRTH_TIMES_TARDE:
+            self.birth_time = ""
         self.select_pack(pack_type)
+        if pack_type == "Pack_Mediodia" or "mediod" in tipo_raw:
+            self.cumple_tipo = "Cumple Mediodía"
         self.reservation_code = codigo
         self.code_locked = True
+        fecha = (self.router.url.query_parameters.get("fecha") or "").strip()
+        if fecha:
+            self.birth_date = fecha
+            self.birth_date_locked = True
 
     # Precios base (año 2026)
     PACK_BASE_PRICES = {
@@ -76,7 +100,9 @@ class FormBaseState(rx.State):
         "Pack_20": 140,
         "Pack_25": 170,
         "Pack_30": 200,
+        "Pack_Mediodia": 0,
     }
+    PRICE_MEDIODIA_PER_CHILD = 5.90
 
     # Límites por pack
     PACK_PIZZA_ROSCA_LIMITS = {
@@ -92,6 +118,107 @@ class FormBaseState(rx.State):
         "Pack_30": 10,
     }
 
+    # ── Cumple Mediodía / Tarde ──────────────────────────────────────────
+    CUMPLE_TIPO_OPTIONS = ["Cumple Tarde", "Cumple Mediodía"]
+    BIRTH_TIMES_TARDE = ["16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00"]
+    BIRTH_TIMES_MEDIODOIA = ["13:00", "13:30", "14:00", "14:30", "15:00"]
+    MENU_MEDIODOIA_TYPES = [
+        "Nuggets de pollo con patata + 1 bebida",
+        "Hamburguesa con patatas + 1 bebida",
+        "Sandwich mixto con patatas + 1 bebida",
+        "Pasta con tomate o aceite + 1 bebida",
+    ]
+    PACK_MENU_MEDIODOIA_LIMITS = {
+        "Pack_15": 15,
+        "Pack_20": 20,
+        "Pack_25": 25,
+        "Pack_30": 30,
+    }
+
+    # Estado Cumple Mediodía
+    cumple_tipo: str = "Cumple Tarde"
+    menu_mediodia_selected: Dict[str, int] = {
+        "Nuggets de pollo con patata + 1 bebida": 0,
+        "Hamburguesa con patatas + 1 bebida": 0,
+        "Sandwich mixto con patatas + 1 bebida": 0,
+        "Pasta con tomate o aceite + 1 bebida": 0,
+    }
+    menu_mediodia_notes: Dict[str, str] = {
+        "Nuggets de pollo con patata + 1 bebida": "",
+        "Hamburguesa con patatas + 1 bebida": "",
+        "Sandwich mixto con patatas + 1 bebida": "",
+        "Pasta con tomate o aceite + 1 bebida": "",
+    }
+
+    @rx.var
+    def menu_mediodia_limit(self) -> int:
+        # Mediodía es pack único por niño, sin límite fijo por pack; usamos 50 como tope práctico
+        if self.cumple_tipo == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia":
+            return 50
+        return self.PACK_MENU_MEDIODOIA_LIMITS.get(self.selected_pack, 15)
+
+    @rx.var
+    def menu_mediodia_total(self) -> int:
+        return sum(self.menu_mediodia_selected.values())
+
+    @rx.var
+    def menu_mediodia_remaining(self) -> int:
+        return max(0, self.menu_mediodia_limit - self.menu_mediodia_total)
+
+    @rx.var
+    def menu_mediodia_price_total(self) -> float:
+        return round(self.menu_mediodia_total * self.PRICE_MEDIODIA_PER_CHILD, 2)
+
+    @rx.var
+    def birth_times_options(self) -> list[str]:
+        if self.cumple_tipo == "Cumple Mediodía":
+            return self.BIRTH_TIMES_MEDIODOIA
+        return self.BIRTH_TIMES_TARDE
+
+    @rx.event
+    def set_cumple_tipo(self, value: str):
+        """Cambia entre Cumple Mediodía y Cumple Tarde, fija Pack_Mediodia y limpia hora si no encaja."""
+        self.cumple_tipo = value if value in self.CUMPLE_TIPO_OPTIONS else "Cumple Tarde"
+        if self.cumple_tipo == "Cumple Mediodía":
+            self.selected_pack = "Pack_Mediodia"
+            self.max_allowed_pizza_rosca = self.PACK_PIZZA_ROSCA_LIMITS.get("Pack_Mediodia", 3)
+            self.max_allowed_drinks = self.PACK_DRINK_LIMITS.get("Pack_Mediodia", 4)
+            if self.birth_time not in self.BIRTH_TIMES_MEDIODOIA:
+                self.birth_time = ""
+        else:
+            if self.selected_pack == "Pack_Mediodia":
+                self.selected_pack = "Pack_15"
+                self.max_allowed_pizza_rosca = self.PACK_PIZZA_ROSCA_LIMITS.get("Pack_15", 3)
+                self.max_allowed_drinks = self.PACK_DRINK_LIMITS.get("Pack_15", 4)
+            if self.birth_time not in self.BIRTH_TIMES_TARDE:
+                self.birth_time = ""
+
+    @rx.event
+    def update_menu_mediodia(self, menu_type: str, value: str):
+        """Actualiza cantidad de cada menú (limitado a pack)."""
+        new_value = int(value) if str(value).isdigit() else 0
+        if new_value < 0:
+            new_value = 0
+        old_value = self.menu_mediodia_selected.get(menu_type, 0)
+        updated = dict(self.menu_mediodia_selected)
+        updated[menu_type] = new_value
+        if sum(updated.values()) > self.menu_mediodia_limit:
+            updated[menu_type] = old_value
+            self.menu_mediodia_selected = updated
+            self.show_alert_dialog(
+                f"No puedes seleccionar más de {self.menu_mediodia_limit} menús en total (según pack).",
+                "pizzas_roscas",
+            )
+            return
+        self.menu_mediodia_selected = updated
+
+    @rx.event
+    def update_menu_mediodia_note(self, menu_type: str, value: str):
+        """Guarda comentario por producto (ej: Sin lechuga)."""
+        updated = dict(self.menu_mediodia_notes)
+        updated[menu_type] = (value or "")[:120]
+        self.menu_mediodia_notes = updated
+
     @rx.event
     def select_pack(self, pack_type: str):
         """Selecciona el pack y reinicia las selecciones."""
@@ -103,19 +230,27 @@ class FormBaseState(rx.State):
         self.drink_selected.clear()
         self.total_pizza_rosca = 0
         self.total_drinks = 0
+        # Reset mediodía (cada menú incluye bebida, límite = n personas)
+        self.menu_mediodia_selected = {t: 0 for t in self.MENU_MEDIODOIA_TYPES}
+        self.menu_mediodia_notes = {t: "" for t in self.MENU_MEDIODOIA_TYPES}
         self.selected_bakery_option = ""
         self.bakery_price = 0.0
         self.bakery_weight = 1.0
         self.update_trigger += 1
 
     @rx.var
-    def get_pack_price(self) -> int:
+    def get_pack_price(self) -> float:
         """Devuelve el precio del pack."""
-        return self.PACK_BASE_PRICES.get(self.selected_pack, 0)
+        if self.cumple_tipo == "Cumple Mediodía":
+            return float(self.menu_mediodia_price_total)
+        return float(self.PACK_BASE_PRICES.get(self.selected_pack, 0))
 
     @rx.var
     def pack_title_with_price(self) -> str:
         """Genera el título del pack con el precio dinámico."""
+        if self.cumple_tipo == "Cumple Mediodía":
+            total = self.menu_mediodia_price_total
+            return f"PACK MEDIODÍA - {self.PRICE_MEDIODIA_PER_CHILD:.2f}€/niño ({self.menu_mediodia_total} niños = {total:.2f}€)"
         pack_names = {
             "Pack_15": "PACK DE 15 PERSONAS",
             "Pack_20": "PACK DE 20 PERSONAS",
@@ -375,16 +510,22 @@ class FormBaseState(rx.State):
     @rx.var
     def can_send(self) -> bool:
         """Valida si el formulario está listo para enviar."""
+        base = (
+            bool(self.child_name.strip())
+            and bool(self.child_age.strip())
+            and bool(self.birth_date.strip())
+            and bool(self.birth_time.strip())
+            and bool(self.reservation_code.strip())
+            and bool(self.selected_bakery_option.strip())
+        )
+        if not base:
+            return False
+        if self.cumple_tipo == "Cumple Mediodía":
+            return self.selected_pack == "Pack_Mediodia" and self.menu_mediodia_total > 0
         return (
-            bool(self.child_name.strip()) and
-            bool(self.child_age.strip()) and
-            bool(self.birth_date.strip()) and
-            bool(self.birth_time.strip()) and
-            bool(self.reservation_code.strip()) and
-            bool(self.selected_food_option.strip()) and
-            bool(self.selected_bakery_option.strip()) and
-            self.total_pizza_rosca == self.max_allowed_pizza_rosca and
-            self.total_drinks == self.max_allowed_drinks
+            bool(self.selected_food_option.strip())
+            and self.total_pizza_rosca == self.max_allowed_pizza_rosca
+            and self.total_drinks == self.max_allowed_drinks
         )
 
     @rx.var
@@ -398,8 +539,14 @@ class FormBaseState(rx.State):
         return max(0, self.max_allowed_drinks - self.total_drinks)
 
     @rx.var
+    def missing_menu_mediodia(self) -> int:
+        return 0 if self.menu_mediodia_total > 0 else 1
+
+    @rx.var
     def total_missing(self) -> int:
         """Devuelve la cantidad total faltante."""
+        if self.cumple_tipo == "Cumple Mediodía":
+            return self.missing_menu_mediodia
         return self.missing_pizza_rosca + self.missing_drinks
 
     @rx.event
@@ -410,17 +557,24 @@ class FormBaseState(rx.State):
     @rx.var
     def collected_data(self) -> dict:
         """Devuelve los datos del formulario."""
+        is_mediodia = self.cumple_tipo == "Cumple Mediodía"
         return {
             "child_name": self.child_name,
             "child_age": self.child_age,
             "birth_date": self.birth_date,
             "birth_time": self.birth_time,
             "reservation_code": self.reservation_code,
+            "cumple_tipo": self.cumple_tipo,
+            # alias compat con hotel_mena_plaza_web (_to_pedido lee turno/tipo_cumple)
+            "turno": "Mediodía" if is_mediodia else "Tarde",
+            "tipo_cumple": "Mediodía" if is_mediodia else "Tarde",
             "selected_food_option": self.selected_food_option,
             "butter_on_sandwiches": self.butter_on_sandwiches,
             "pizza_selected": self.pizza_selected,
             "rosca_selected": self.rosca_selected,
             "drink_selected": self.drink_selected,
+            "menu_mediodia_selected": self.menu_mediodia_selected,
+            "menu_mediodia_notes": self.menu_mediodia_notes,
             "extra_selected": self.extra_selected,
             "show_extras": self.show_extras,
             "extra_pizza_selected": self.extra_pizza_selected,
@@ -451,28 +605,47 @@ class FormBaseState(rx.State):
         if include_tortillas:
             message += "+ 2 TORTILLAS DE PATATAS INCLUIDAS\n\n"
 
-        message += f"{data['selected_food_option']}\n"
-        
-        # Añadir información sobre mantequilla si está marcado
-        if data['butter_on_sandwiches']:
-            message += "Untar bocadillos con mantequilla\n"
-        
-        message += "\n"
+        is_mediodia = data.get("cumple_tipo") == "Cumple Mediodía"
+        message += f"TIPO: {data.get('cumple_tipo','Cumple Tarde')}\n\n"
 
-        if data['pizza_selected']:
-            pizzas_items = [f"{pizza_type}: {quantity}" for pizza_type, quantity in data['pizza_selected'].items() if quantity > 0]
-            if pizzas_items:
-                message += "PIZZAS:\n" + "\n".join(pizzas_items) + "\n\n"
-
-        if data['rosca_selected']:
-            roscas_items = [f"{rosca_type}: {quantity}" for rosca_type, quantity in data['rosca_selected'].items() if quantity > 0]
-            if roscas_items:
-                message += "ROSCAS:\n" + "\n".join(roscas_items) + "\n\n"
-
-        if data['drink_selected']:
-            drinks_items = [f"{drink_type}: {quantity}" for drink_type, quantity in data['drink_selected'].items() if quantity > 0]
-            if drinks_items:
-                message += "BEBIDAS:\n" + "\n".join(drinks_items) + "\n\n"
+        if is_mediodia:
+            message += "MENÚ MEDIODÍA (cada uno incluye patatas + 1 bebida):\n"
+            has_menu = False
+            total_menus = 0
+            for menu_type, qty in (data.get("menu_mediodia_selected") or {}).items():
+                q = int(qty or 0)
+                total_menus += q
+                if q > 0:
+                    has_menu = True
+                    note = (data.get("menu_mediodia_notes") or {}).get(menu_type, "")
+                    note = note.strip()
+                    if note:
+                        message += f"- {menu_type}: {q} (Nota: {note})\n"
+                    else:
+                        message += f"- {menu_type}: {q}\n"
+            if not has_menu:
+                message += "- (pendiente selección)\n"
+            else:
+                price_mediodia = total_menus * self.PRICE_MEDIODIA_PER_CHILD
+                message += f"Precio Mediodía: {total_menus} niños x {self.PRICE_MEDIODIA_PER_CHILD:.2f}€ = {price_mediodia:.2f}€\n"
+            message += "\n"
+        else:
+            message += f"{data['selected_food_option']}\n"
+            if data['butter_on_sandwiches']:
+                message += "Untar bocadillos con mantequilla\n"
+            message += "\n"
+            if data['pizza_selected']:
+                pizzas_items = [f"{pizza_type}: {quantity}" for pizza_type, quantity in data['pizza_selected'].items() if quantity > 0]
+                if pizzas_items:
+                    message += "PIZZAS:\n" + "\n".join(pizzas_items) + "\n\n"
+            if data['rosca_selected']:
+                roscas_items = [f"{rosca_type}: {quantity}" for rosca_type, quantity in data['rosca_selected'].items() if quantity > 0]
+                if roscas_items:
+                    message += "ROSCAS:\n" + "\n".join(roscas_items) + "\n\n"
+            if data['drink_selected']:
+                drinks_items = [f"{drink_type}: {quantity}" for drink_type, quantity in data['drink_selected'].items() if quantity > 0]
+                if drinks_items:
+                    message += "BEBIDAS:\n" + "\n".join(drinks_items) + "\n\n"
 
         if data['extra_selected']: # Solo añadir si hay extras de texto
             message += f"OTROS EXTRAS:\n{data['extra_selected']}\n\n"
@@ -589,6 +762,7 @@ class FormBaseState(rx.State):
             "Pack_20": ("PACK DE 20 PERSONAS", False),
             "Pack_25": ("PACK DE 25 PERSONAS", True),
             "Pack_30": ("PACK DE 30 PERSONAS", True),
+            "Pack_Mediodia": ("PACK MEDIODÍA", False),
         }
         if self.selected_pack in pack_map:
             pack_name, include_tortillas = pack_map[self.selected_pack]
