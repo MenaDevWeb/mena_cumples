@@ -104,6 +104,12 @@ class FormBaseState(rx.State):
     }
     PRICE_MEDIODIA_PER_CHILD = 5.90
 
+    # Tortillas de patatas incluidas por pack (el dashboard del hotel las lee de detalle)
+    PACK_TORTILLAS = {
+        "Pack_25": 2,
+        "Pack_30": 2,
+    }
+
     # Límites por pack
     PACK_PIZZA_ROSCA_LIMITS = {
         "Pack_15": 3,
@@ -717,6 +723,11 @@ class FormBaseState(rx.State):
             from mena_cumples.supabase_utils import get_supabase_client
 
             data = self.collected_data
+            # Persistir las tortillas del pack en el detalle para que el dashboard
+            # del hotel las muestre en cocina. Se re-derivan del pack para no
+            # depender de refactors del formulario.
+            data["include_tortillas"] = self.selected_pack in self.PACK_TORTILLAS
+            data["tortillas_count"] = self.PACK_TORTILLAS.get(self.selected_pack, 0)
             total_price = self._compute_total_price(pack_price)
             codigo = (data["reservation_code"] or "").strip().upper()
 
@@ -758,14 +769,15 @@ class FormBaseState(rx.State):
     async def send_whatsapp_message(self):
         """Envía el mensaje de WhatsApp con los datos del formulario y guarda el pedido en Supabase."""
         pack_map = {
-            "Pack_15": ("PACK DE 15 PERSONAS", False),
-            "Pack_20": ("PACK DE 20 PERSONAS", False),
-            "Pack_25": ("PACK DE 25 PERSONAS", True),
-            "Pack_30": ("PACK DE 30 PERSONAS", True),
-            "Pack_Mediodia": ("PACK MEDIODÍA", False),
+            "Pack_15": "PACK DE 15 PERSONAS",
+            "Pack_20": "PACK DE 20 PERSONAS",
+            "Pack_25": "PACK DE 25 PERSONAS",
+            "Pack_30": "PACK DE 30 PERSONAS",
+            "Pack_Mediodia": "PACK MEDIODÍA",
         }
         if self.selected_pack in pack_map:
-            pack_name, include_tortillas = pack_map[self.selected_pack]
+            pack_name = pack_map[self.selected_pack]
+            include_tortillas = self.selected_pack in self.PACK_TORTILLAS
             price = self.get_pack_price  # Obtener precio dinámico
             # Guardar el pedido en Supabase (actualiza la ficha por código) antes de abrir WhatsApp.
             # Si el código no es válido o falla, se avisa al usuario y NO se abre WhatsApp.
