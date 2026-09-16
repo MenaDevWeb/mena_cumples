@@ -11,10 +11,10 @@ def pack_mediodia() -> rx.Component:
         rx.vstack(
             pack.pack_form_mediodia(
                 image_url="/packs_image.webp",
-                pack_description="Pack Mediodía — 5,90€ por niño. Incluye patatas, palomitas, bollería/galletas y frutos secos. Cada menú incluye patatas + 1 bebida.",
+                pack_description="Pack Mediodía — 5,90€ por niño",
                 name_title="*¿Nombre del niño o niña del cumpleaños y edad?",
-                date_time="*¿Fecha y hora del cumpleaños? (13:00-15:00)",
-                time_description="Horario Mediodía: elige entre 13:00 y 15:00.",
+                date_time="*¿Fecha y hora del cumpleaños?",
+                time_description="Horario Mediodía. Máximo 2 horas y media de celebración.",
                 bakery_title="REPOSTERÍA",
                 bakery_options=current_bakery_options,
                 observation_title="OBSERVACIONES",

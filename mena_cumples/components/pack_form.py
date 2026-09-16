@@ -236,11 +236,11 @@ def _reserva_content() -> rx.Component:
     )
 
 
-def _extras_toggle() -> rx.Component:
+def _extras_toggle(label: str = " QUIERO AÑADIR EXTRAS (pizzas, roscas, bebidas extra, chuches) ") -> rx.Component:
     """Checkbox para mostrar u ocultar la sección de extras."""
     return rx.box(
         rx.checkbox(
-            " QUIERO AÑADIR EXTRAS (pizzas, roscas, bebidas extra, chuches) ",
+            label,
             checked=FormBaseState.show_extras,
             on_change=FormBaseState.toggle_extras,
             size="3",
@@ -631,15 +631,12 @@ def pack_form_mediodia(
                     icon_tag="utensils",
                     bg_color="#fffbeb",
                 ),
-                _extras_toggle(),
+                _extras_toggle(" QUIERO AÑADIR EXTRAS (chuches) "),
                 rx.cond(
                     FormBaseState.show_extras,
                     _section_card(
-                        "Extras",
-                        seleccion_extras(
-                            FormBaseState.extra_pizza_selected,
-                            FormBaseState.extra_rosca_selected,
-                            FormBaseState.extra_drink_selected,
+                        "Extras — solo chuches",
+                        seleccion_extras_mediodia(
                             FormBaseState.candy_count,
                         ),
                         icon_tag="sparkles",
@@ -1154,6 +1151,43 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
                 rx.text("TOTAL EXTRAS:", weight="bold", size="4"),
                 rx.text(
                     f"{FormBaseState.total_extra_food_price + FormBaseState.total_extra_drink_price + FormBaseState.total_candy_price:.2f}€",
+                    weight="bold",
+                    size="5",
+                    color=Color.PINK,
+                ),
+                justify_content="space-between",
+                width="100%",
+            ),
+            width="100%",
+        ),
+        width="100%",
+    )
+
+
+def seleccion_extras_mediodia(candy_count):
+    """Extras para Cumple Mediodía: solo chuches (la repostería va en su propia sección)."""
+    return rx.vstack(
+        _hint("En Pack Mediodía solo puedes añadir chuches como extra. La repostería se elige abajo."),
+        # Sección Chuches
+        rx.text("Chuches", weight="bold", color=Color.PINK),
+        _option_row(
+            candy_count.to_string(),
+            FormBaseState.update_candy_count,
+            "Plato de Chuches",
+            price=f"{FormBaseState.price_candy}€",
+            max_length=2,
+        ),
+
+        rx.divider(margin_y="1rem"),
+
+        # Totales (solo chuches en mediodía)
+        rx.vstack(
+            _total_row("Total Extras Chuches:", FormBaseState.total_candy_price),
+            rx.divider(margin_y="0.5rem"),
+            rx.hstack(
+                rx.text("TOTAL EXTRAS:", weight="bold", size="4"),
+                rx.text(
+                    f"{FormBaseState.total_candy_price:.2f}€",
                     weight="bold",
                     size="5",
                     color=Color.PINK,

@@ -191,6 +191,13 @@ class FormBaseState(rx.State):
             self.max_allowed_drinks = self.PACK_DRINK_LIMITS.get("Pack_Mediodia", 4)
             if self.birth_time not in self.BIRTH_TIMES_MEDIODOIA:
                 self.birth_time = ""
+            # Mediodía: solo chuches + repostería como extras
+            self.extra_pizza_selected = {}
+            self.extra_rosca_selected = {}
+            self.extra_drink_selected = {}
+            self.total_extra_food_price = 0.0
+            self.total_extra_drink_price = 0.0
+            self.calculate_extra_prices()
         else:
             if self.selected_pack == "Pack_Mediodia":
                 self.selected_pack = "Pack_15"
@@ -242,6 +249,14 @@ class FormBaseState(rx.State):
         self.selected_bakery_option = ""
         self.bakery_price = 0.0
         self.bakery_weight = 1.0
+        # En Pack_Mediodia solo chuches + repostería: limpiar extras de comida/bebida
+        if pack_type == "Pack_Mediodia" or self.cumple_tipo == "Cumple Mediodía":
+            self.extra_pizza_selected = {}
+            self.extra_rosca_selected = {}
+            self.extra_drink_selected = {}
+            self.total_extra_food_price = 0.0
+            self.total_extra_drink_price = 0.0
+            self.calculate_extra_prices()
         self.update_trigger += 1
 
     @rx.var
@@ -379,21 +394,33 @@ class FormBaseState(rx.State):
 
     @rx.event
     def update_extra_pizza_selected(self, pizza_type: str, value: str):
-        """Actualiza la selección de pizzas extra."""
+        """Actualiza la selección de pizzas extra (no permitido en Mediodía)."""
+        if self.cumple_tipo == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia":
+            self.extra_pizza_selected = {}
+            self.calculate_extra_prices()
+            return
         new_value = int(value) if str(value).isdigit() else 0
         self.extra_pizza_selected[pizza_type] = new_value
         self.calculate_extra_prices()
 
     @rx.event
     def update_extra_rosca_selected(self, rosca_type: str, value: str):
-        """Actualiza la selección de roscas extra."""
+        """Actualiza la selección de roscas extra (no permitido en Mediodía)."""
+        if self.cumple_tipo == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia":
+            self.extra_rosca_selected = {}
+            self.calculate_extra_prices()
+            return
         new_value = int(value) if str(value).isdigit() else 0
         self.extra_rosca_selected[rosca_type] = new_value
         self.calculate_extra_prices()
 
     @rx.event
     def update_extra_drink_selected(self, drink_type: str, value: str):
-        """Actualiza la selección de bebidas extra."""
+        """Actualiza la selección de bebidas extra (no permitido en Mediodía)."""
+        if self.cumple_tipo == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia":
+            self.extra_drink_selected = {}
+            self.calculate_extra_prices()
+            return
         new_value = int(value) if str(value).isdigit() else 0
         self.extra_drink_selected[drink_type] = new_value
         self.calculate_extra_prices()
@@ -410,7 +437,24 @@ class FormBaseState(rx.State):
 
     @rx.event
     def calculate_extra_prices(self):
-        """Calcula el precio total de todos los extras."""
+        """Calcula el precio total de todos los extras.
+
+        En Cumple Mediodía solo se permiten chuches (+ repostería en su sección):
+        los extras de comida/bebida se fuerzan a 0 aunque lleguen valores antiguos.
+        """
+        is_mediodia = self.cumple_tipo == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia"
+        if is_mediodia:
+            if self.extra_pizza_selected:
+                self.extra_pizza_selected = {}
+            if self.extra_rosca_selected:
+                self.extra_rosca_selected = {}
+            if self.extra_drink_selected:
+                self.extra_drink_selected = {}
+            self.total_extra_food_price = 0.0
+            self.total_extra_drink_price = 0.0
+            # Calcular chuches
+            self.total_candy_price = self.candy_count * self.price_candy
+            return
         # Calcular comida
         food_total = 0.0
         for pizza, qty in self.extra_pizza_selected.items():
@@ -656,32 +700,35 @@ class FormBaseState(rx.State):
         if data['extra_selected']: # Solo añadir si hay extras de texto
             message += f"OTROS EXTRAS:\n{data['extra_selected']}\n\n"
 
-        # Añadir extras de comida (pizzas y roscas)
-        extra_food_items = []
-        if data['extra_pizza_selected']:
-            for pizza, qty in data['extra_pizza_selected'].items():
-                if qty > 0:
-                    extra_food_items.append(f"Pizza Extra {pizza}: {qty}")
-        
-        if data['extra_rosca_selected']:
-            for rosca, qty in data['extra_rosca_selected'].items():
-                if qty > 0:
-                    extra_food_items.append(f"Rosca Extra {rosca}: {qty}")
-        
-        if extra_food_items:
-            message += "EXTRAS COMIDA:\n" + "\n".join(extra_food_items) + "\n"
-            message += f"Precio Extras Comida: {data['total_extra_food_price']:.2f}€\n\n"
+        # En Mediodía solo chuches + repostería: ignorar extras de comida/bebida
+        # aunque lleguen valores antiguos en el estado.
+        if not is_mediodia:
+            # Añadir extras de comida (pizzas y roscas)
+            extra_food_items = []
+            if data['extra_pizza_selected']:
+                for pizza, qty in data['extra_pizza_selected'].items():
+                    if qty > 0:
+                        extra_food_items.append(f"Pizza Extra {pizza}: {qty}")
 
-        # Añadir extras de bebidas
-        extra_drink_items = []
-        if data['extra_drink_selected']:
-            for drink, qty in data['extra_drink_selected'].items():
-                if qty > 0:
-                    extra_drink_items.append(f"Bebida Extra {drink}: {qty}")
-        
-        if extra_drink_items:
-            message += "EXTRAS BEBIDAS:\n" + "\n".join(extra_drink_items) + "\n"
-            message += f"Precio Extras Bebidas: {data['total_extra_drink_price']:.2f}€\n\n"
+            if data['extra_rosca_selected']:
+                for rosca, qty in data['extra_rosca_selected'].items():
+                    if qty > 0:
+                        extra_food_items.append(f"Rosca Extra {rosca}: {qty}")
+
+            if extra_food_items:
+                message += "EXTRAS COMIDA:\n" + "\n".join(extra_food_items) + "\n"
+                message += f"Precio Extras Comida: {data['total_extra_food_price']:.2f}€\n\n"
+
+            # Añadir extras de bebidas
+            extra_drink_items = []
+            if data['extra_drink_selected']:
+                for drink, qty in data['extra_drink_selected'].items():
+                    if qty > 0:
+                        extra_drink_items.append(f"Bebida Extra {drink}: {qty}")
+
+            if extra_drink_items:
+                message += "EXTRAS BEBIDAS:\n" + "\n".join(extra_drink_items) + "\n"
+                message += f"Precio Extras Bebidas: {data['total_extra_drink_price']:.2f}€\n\n"
 
         # Añadir chuches
         if data['candy_count'] > 0:
@@ -696,14 +743,20 @@ class FormBaseState(rx.State):
         if data['observation_selected']:  # Solo añadir si hay observaciones
             message += f"OBSERVACIONES:\n{data['observation_selected']}\n\n"
 
-        # Calcular y mostrar precio total
-        total_price = price + data['total_extra_food_price'] + data['total_extra_drink_price'] + data['total_candy_price'] + data['bakery_price']
+        # Calcular y mostrar precio total (en mediodía solo chuches + repostería)
+        if is_mediodia:
+            total_price = price + data['total_candy_price'] + data['bakery_price']
+        else:
+            total_price = price + data['total_extra_food_price'] + data['total_extra_drink_price'] + data['total_candy_price'] + data['bakery_price']
         message += f"TOTAL A PAGAR: {total_price:.2f}€"
 
         return message
 
     def _compute_total_price(self, pack_price: int) -> float:
         data = self.collected_data
+        is_mediodia = data.get("cumple_tipo") == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia"
+        if is_mediodia:
+            return pack_price + data["total_candy_price"] + data["bakery_price"]
         return (
             pack_price
             + data["total_extra_food_price"]
@@ -723,6 +776,14 @@ class FormBaseState(rx.State):
             from mena_cumples.supabase_utils import get_supabase_client
 
             data = self.collected_data
+            # En Mediodía solo chuches + repostería: sanear detalle por si llegan
+            # valores antiguos de extras de comida/bebida.
+            if data.get("cumple_tipo") == "Cumple Mediodía" or self.selected_pack == "Pack_Mediodia":
+                data["extra_pizza_selected"] = {}
+                data["extra_rosca_selected"] = {}
+                data["extra_drink_selected"] = {}
+                data["total_extra_food_price"] = 0.0
+                data["total_extra_drink_price"] = 0.0
             # Persistir las tortillas del pack en el detalle para que el dashboard
             # del hotel las muestre en cocina. Se re-derivan del pack para no
             # depender de refactors del formulario.

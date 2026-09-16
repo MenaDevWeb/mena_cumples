@@ -612,7 +612,7 @@ def pack_options_grid() -> rx.Component:
                     width="100%",
                 ),
                 rx.text(
-                    "Mismo precio que Tarde. Cada menú incluye patatas + 1 bebida. Límite = nº personas del pack. Extras y repostería iguales.",
+                    "Mismo precio que Tarde. Cada menú incluye patatas + 1 bebida. Límite = nº personas del pack. Como extras solo chuches y repostería.",
                     size="2",
                     color="#92400e",
                     align="center",
