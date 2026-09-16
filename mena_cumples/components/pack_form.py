@@ -324,7 +324,7 @@ def _menu_mediodia_section() -> rx.Component:
     return rx.vstack(
         rx.hstack(
             rx.text(
-                "Menú Mediodía (cada uno incluye patatas + 1 bebida)",
+                "Menú Mediodía",
                 weight="bold",
                 color="#92400e",
                 size="3",
@@ -619,12 +619,31 @@ def pack_form_mediodia(
                     "Menú Mediodía — 5,90€ por niño",
                     rx.vstack(
                         rx.text(
-                            "Elige cantidad por menú. Cada uno incluye patatas + 1 bebida. Añade nota por producto.",
+                            "Elige cantidad por menú. Añade nota por producto si lo necesitas.",
                             size="2",
                             color=Color.PURPLE_DARK,
                             style={"font_style": "italic"},
                         ),
                         _menu_mediodia_section(),
+                        rx.box(
+                            rx.hstack(
+                                rx.icon(tag="info", size=16, color="#b45309"),
+                                rx.text(
+                                    "Si quieres pizzas o bebidas extra, se servirán a precio de carta. "
+                                    "Indícalo en Observaciones y te lo confirmamos por WhatsApp.",
+                                    size="2",
+                                    color="#92400e",
+                                ),
+                                spacing="2",
+                                align_items="center",
+                            ),
+                            margin_top="0.5rem",
+                            padding="0.6rem 0.8rem",
+                            background_color="#fef3c7",
+                            border="1px solid #fde68a",
+                            border_radius="0.5rem",
+                            width="100%",
+                        ),
                         spacing="2",
                         width="100%",
                     ),
@@ -1168,6 +1187,7 @@ def seleccion_extras_mediodia(candy_count):
     """Extras para Cumple Mediodía: solo chuches (la repostería va en su propia sección)."""
     return rx.vstack(
         _hint("En Pack Mediodía solo puedes añadir chuches como extra. La repostería se elige abajo."),
+        _hint("Las pizzas o bebidas extra se servirán a precio de carta: pidelas en Observaciones."),
         # Sección Chuches
         rx.text("Chuches", weight="bold", color=Color.PINK),
         _option_row(
