@@ -644,18 +644,21 @@ class FormBaseState(rx.State):
 
     def _generate_whatsapp_message(self, pack_name: str, price: int, include_tortillas: bool = False) -> str:
         data = self.collected_data
+        is_mediodia = data.get("cumple_tipo") == "Cumple Mediodía"
         message = (
             f"Fecha: {data['birth_date']}\n"
             f"Hora: {data['birth_time']}\n"
             f"Cumpleaños de: {data['child_name']} edad {data['child_age']}\n"
             f"CÓDIGO DE RESERVA: {data['reservation_code']}\n\n"
             f"{pack_name}\n"
-            "Los packs de cumpleaños incluyen patatas, palomitas, bollería/galletas y frutos secos.\n\n"
         )
+        if not is_mediodia:
+            message += "Los packs de cumpleaños incluyen patatas, palomitas, bollería/galletas y frutos secos.\n\n"
+        else:
+            message += "\n"
         if include_tortillas:
             message += "+ 2 TORTILLAS DE PATATAS INCLUIDAS\n\n"
 
-        is_mediodia = data.get("cumple_tipo") == "Cumple Mediodía"
         message += f"TIPO: {data.get('cumple_tipo','Cumple Tarde')}\n\n"
 
         if is_mediodia:
