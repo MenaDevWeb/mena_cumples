@@ -1,14 +1,18 @@
 import reflex as rx
 import mena_cumples.components.pack_form as pack
-from mena_cumples.styles.styles import Color
 from mena_cumples.states.form_state import FormBaseState
+from mena_cumples.components.navbar import navbar, mobile_drawer
+from mena_cumples.components.footer import footer
 from ..routes import Routes
 
 
 @rx.page(route=Routes.PACK_20_PAX.value, title="Pack 20 personas")
 def pack_20() -> rx.Component:
-    return rx.container(
-        rx.vstack(
+    return rx.box(
+        navbar(),
+        mobile_drawer(),
+        rx.container(
+            rx.vstack(
             pack.pack_form(
                 image_url="/pack_20_image.webp",
                 pack_type="PACK DE 20 PERSONAS--120€",
@@ -37,8 +41,14 @@ def pack_20() -> rx.Component:
                 observation_selected_value="",
             ),
         ),
-        bg=Color.PAGE_BG_ALT,
-        on_mount=lambda: FormBaseState.init_pack_page("Pack_20")
+        on_mount=lambda: FormBaseState.init_pack_page("Pack_20"),
+        padding_y="1.5rem",
+        ),
+        footer(),
+        background_color="#FFF7FB",
+        min_height="100vh",
+        display="flex",
+        flex_direction="column",
     )
 
 # opciones de radio button bocadillos

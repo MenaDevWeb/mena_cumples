@@ -1,14 +1,18 @@
 import reflex as rx
 import mena_cumples.components.pack_form as pack
-from mena_cumples.styles.styles import Color
 from mena_cumples.states.form_state import FormBaseState
+from mena_cumples.components.navbar import navbar, mobile_drawer
+from mena_cumples.components.footer import footer
 from ..routes import Routes
 
 
 @rx.page(route=Routes.PACK_MEDIODOIA.value, title="Pack Mediodía — 5,90€/niño")
 def pack_mediodia() -> rx.Component:
-    return rx.container(
-        rx.vstack(
+    return rx.box(
+        navbar(),
+        mobile_drawer(),
+        rx.container(
+            rx.vstack(
             pack.pack_form_mediodia(
                 image_url="/packs_image.webp",
                 pack_description="Pack Mediodía — 5,90€ por niño",
@@ -20,8 +24,14 @@ def pack_mediodia() -> rx.Component:
                 observation_title="OBSERVACIONES",
             ),
         ),
-        bg=Color.PAGE_BG_ALT,
         on_mount=lambda: FormBaseState.init_pack_page("Pack_Mediodia"),
+        padding_y="1.5rem",
+        ),
+        footer(),
+        background_color="#FFF7FB",
+        min_height="100vh",
+        display="flex",
+        flex_direction="column",
     )
 
 

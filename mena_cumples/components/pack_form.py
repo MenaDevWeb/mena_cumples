@@ -1,5 +1,5 @@
 import reflex as rx
-from mena_cumples.styles.styles import Color, Shadow, BorderRadius, Transition
+from mena_cumples.styles.styles import Color, FontSize, Shadow, BorderRadius, Transition
 from .radio_group_button import radio_button_food
 from .radio_group_button import radio_button_bakery
 from mena_cumples.states.form_state import FormBaseState
@@ -7,36 +7,43 @@ from mena_cumples.states.form_state import FormBaseState
 
 # ============================================================
 # Helpers de diseño reutilizables
+# NOTA: solo estética. No cambiar vars/handlers de FormBaseState.
 # ============================================================
 
-def _section_card(title: str, children, icon_tag: str = "", bg_color: str = Color.CARD_PURPLE) -> rx.Component:
+def _section_card(title: str, children, icon_tag: str = "", bg_color: str = Color.WHITE) -> rx.Component:
     """Card de sección con encabezado e icono."""
     header = (
         rx.hstack(
-            rx.icon(tag=icon_tag, color=Color.PURPLE, size=18),
-            rx.text(title, weight="bold", color=Color.PURPLE_DARK, size="4"),
+            rx.box(
+                rx.icon(tag=icon_tag, color=Color.WHITE, size=16),
+                background_color=Color.PURPLE_DARK,
+                padding="0.4rem",
+                border_radius="0.7rem",
+                flex_shrink="0",
+            ),
+            rx.text(title, weight="bold", color=Color.NAVY, size="4"),
             spacing="2",
             align_items="center",
         )
         if icon_tag
-        else rx.text(title, weight="bold", color=Color.PURPLE_DARK, size="4")
+        else rx.text(title, weight="bold", color=Color.NAVY, size="4")
     )
     return rx.box(
         header,
-        children,
+        rx.box(children, margin_top="0.9rem"),
         width="100%",
         padding="1.25rem",
-        border_radius="1rem",
+        border_radius="1.25rem",
         background_color=bg_color,
         border="1px solid rgba(124, 58, 237, 0.12)",
         box_shadow=Shadow.CARD,
-        margin_bottom="1rem",
+        margin_bottom="1.1rem",
     )
 
 
 def _question(text: str, margin_top: str = "0.75rem") -> rx.Component:
     """Título de pregunta dentro de una sección."""
-    return rx.text(text, weight="bold", color=Color.PURPLE_DARK, margin_top=margin_top)
+    return rx.text(text, weight="bold", color=Color.NAVY, margin_top=margin_top)
 
 
 def _hint(text: str) -> rx.Component:
@@ -48,21 +55,32 @@ def _hint(text: str) -> rx.Component:
 
 
 def _quantity_input(value, on_change, max_length: int = 1) -> rx.Component:
-    """Input de cantidad pequeño y consistente."""
-    return rx.input(
+    """Input de cantidad pequeño y consistente (nativo: sin marco Radix).
+
+    Usa default_value (no controlado): el usuario teclea libremente y
+    on_change actualiza el estado para los totales. Con value fijo React
+    congelaría el campo.
+    """
+    return rx.el.input(
         placeholder="0",
-        value=value,
+        default_value=value,
         on_change=on_change,
         max_length=max_length,
         type="number",
         min=0,
-        width="50px",
-        height="40px",
-        font_size="16px",
+        width="56px",
+        height="48px",
+        font_size="18px",
+        font_weight="800",
         text_align="center",
-        background_color=Color.WHITE,
-        border="1px solid rgba(124, 58, 237, 0.25)",
-        border_radius="0.5rem",
+        color=Color.NAVY,
+        background_color="#FDF2F8",
+        border_width="2px",
+        border_style="solid",
+        border_color="rgba(124, 58, 237, 0.25)",
+        border_radius="0.9rem",
+        flex_shrink="0",
+        padding="0",
     )
 
 
@@ -71,18 +89,32 @@ def _option_row(value, on_change, label, price=None, max_length: int = 1) -> rx.
     return rx.hstack(
         _quantity_input(value, on_change, max_length),
         rx.vstack(
-            rx.text(label, style={"font_size": "16px", "font_style": "italic", "color": Color.PURPLE_DARK}),
+            rx.text(label, style={"font_size": "16px", "font_weight": "600", "color": Color.NAVY}),
             rx.cond(
                 price is not None,
-                rx.text(price, style={"font_size": "12px", "color": Color.PINK}),
+                rx.badge(
+                    price,
+                    color_scheme="amber",
+                    variant="soft",
+                    radius="full",
+                    size="1",
+                    margin_top="0.15rem",
+                ),
                 rx.fragment(),
             ),
             spacing="0",
             align_items="start",
+            flex="1",
+            min_width="0",
         ),
         align_items="center",
         spacing="3",
-        margin_bottom="10px",
+        background_color=Color.WHITE,
+        border="1px solid rgba(124, 58, 237, 0.12)",
+        border_radius="1rem",
+        padding="0.6rem 0.75rem",
+        margin_bottom="0.6rem",
+        width="100%",
     )
 
 
@@ -162,14 +194,30 @@ def _header_card(image_url: str, pack_description: str) -> rx.Component:
     return rx.box(
         rx.cond(
             image_url != "",
-            rx.image(
-                src=image_url,
-                width="100%",
-                height="auto",
-                border_radius="0.75rem",
+            rx.box(
+                rx.image(
+                    src=image_url,
+                    width="100%",
+                    height="220px",
+                    object_fit="cover",
+                    border_radius="1rem",
+                ),
+                rx.badge(
+                    rx.hstack(
+                        rx.icon(tag="cake", size=13),
+                        rx.text("Tu pedido"),
+                        spacing="1",
+                        align="center",
+                    ),
+                    color_scheme="purple",
+                    variant="soft",
+                    radius="full",
+                    position="absolute",
+                    top="0.75rem",
+                    left="0.75rem",
+                ),
+                position="relative",
                 margin_bottom="1rem",
-                max_height="260px",
-                object_fit="cover",
             ),
             rx.fragment(),
         ),
@@ -177,15 +225,15 @@ def _header_card(image_url: str, pack_description: str) -> rx.Component:
             FormBaseState.pack_title_with_price,
             align="center",
             width="100%",
-            font_size="1.6rem",
-            line_height="2rem",
-            color=Color.PURPLE,
-            font_weight="700",
+            font_size="1.7rem",
+            line_height="2.1rem",
+            color=Color.NAVY,
+            font_weight="900",
             margin_top="0.5rem",
         ),
         rx.text(
             pack_description,
-            margin_top="1rem",
+            margin_top="0.6rem",
             color=Color.PURPLE_DARK,
             size="3",
             weight="medium",
@@ -193,43 +241,72 @@ def _header_card(image_url: str, pack_description: str) -> rx.Component:
             text_align="center",
         ),
         padding="1.25rem",
-        border_radius="1rem",
-        background_color=Color.CARD_PINK,
-        border="1px solid rgba(190, 24, 93, 0.12)",
+        border_radius="1.25rem",
+        background_color=Color.WHITE,
+        border="1px solid rgba(124, 58, 237, 0.12)",
         box_shadow=Shadow.CARD,
-        margin_bottom="1rem",
+        margin_bottom="1.1rem",
         width="100%",
     )
 
 
 def _reserva_content() -> rx.Component:
-    """Contenido de la card de código de reserva."""
+    """Contenido de la card de código de reserva.
+
+    El candado de acceso (init_pack_page) siempre trae el código en la URL
+    y bloquea el campo, así que lo normal es mostrar confirmación compacta.
+    El input manual solo aparece como fallback si el código no viene bloqueado.
+    """
     return rx.vstack(
-        _hint("Introduce el código de reserva que recibiste por WhatsApp para poder hacer tu pedido."),
-        rx.input(
-            placeholder="Código de reserva (ej: CUM-7XD4)",
-            value=FormBaseState.reservation_code,
-            read_only=FormBaseState.code_locked,
-            on_change=lambda new_value: FormBaseState.update_field("reservation_code", new_value),
-            width="100%",
-            height="45px",
-            font_size="18px",
-            font_weight="700",
-            text_transform="uppercase",
-            letter_spacing="2px",
-            background_color=Color.WHITE,
-            border="1px solid rgba(124, 58, 237, 0.25)",
-            border_radius="0.5rem",
-        ),
         rx.cond(
             FormBaseState.code_locked,
-            rx.text(
-                f"Reserva {FormBaseState.reservation_code} cargada desde tu enlace. "
-                "Solo tienes que rellenar tu pedido.",
-                style={"font_style": "italic", "font_size": "13px"},
-                color="#16a34a",
+            rx.hstack(
+                rx.box(
+                    rx.icon(tag="check", color=Color.WHITE, size=16),
+                    background_color=Color.MINT,
+                    padding="0.35rem",
+                    border_radius="9999px",
+                    flex_shrink="0",
+                ),
+                rx.vstack(
+                    rx.text(
+                        "Reserva lista para pedir",
+                        font_weight="700",
+                        color=Color.NAVY,
+                        font_size="16px",
+                    ),
+                    rx.text(
+                        f"Código {FormBaseState.reservation_code} cargado desde tu enlace.",
+                        font_size="13px",
+                        color=Color.PURPLE_DARK,
+                    ),
+                    spacing="0",
+                    align_items="start",
+                ),
+                spacing="3",
+                align_items="center",
             ),
-            rx.fragment(),
+            rx.vstack(
+                _hint("Introduce el código de reserva que recibiste por WhatsApp para poder hacer tu pedido."),
+                rx.el.input(
+                    placeholder="Código de reserva (ej: CUM-7XD4)",
+                    value=FormBaseState.reservation_code,
+                    on_change=lambda new_value: FormBaseState.update_field("reservation_code", new_value),
+                    width="100%",
+                    height="3rem",
+                    font_size="18px",
+                    font_weight="800",
+                    text_transform="uppercase",
+                    letter_spacing="2px",
+                    color=Color.NAVY,
+                    background_color="#FDF2F8",
+                    border="2px solid rgba(124, 58, 237, 0.25)",
+                    border_radius="1rem",
+                    padding="0.5rem 1rem",
+                ),
+                spacing="3",
+                width="100%",
+            ),
         ),
         width="100%",
         spacing="3",
@@ -249,11 +326,11 @@ def _extras_toggle(label: str = " QUIERO AÑADIR EXTRAS (pizzas, roscas, bebidas
         width="100%",
         text_align="center",
         margin_y="0.5rem",
-        margin_bottom="1rem",
-        padding="0.9rem",
-        background_color=Color.CARD_EXTRAS_TOGGLE,
-        border_radius="0.75rem",
-        border=f"2px solid {Color.WARNING}",
+        margin_bottom="1.1rem",
+        padding="1rem",
+        background_color=Color.SUNNY_BG,
+        border_radius="1rem",
+        style={"border": "2px dashed #EAB308"},
     )
 
 
@@ -353,14 +430,17 @@ def _menu_mediodia_section() -> rx.Component:
                     "Nuggets de pollo con patata + 1 bebida",
                     max_length=2,
                 ),
-                rx.input(
+                rx.el.input(
                     placeholder="Nota ej: Sin lechuga, sin tomate / solo carne",
                     value=FormBaseState.menu_mediodia_notes["Nuggets de pollo con patata + 1 bebida"],
                     on_change=lambda v: FormBaseState.update_menu_mediodia_note("Nuggets de pollo con patata + 1 bebida", v),
                     width="100%",
                     background_color=Color.WHITE,
-                    border="1px solid #fcd34d",
-                    border_radius="0.5rem",
+                    border_width="2px",
+                    border_style="solid",
+                    border_color="#fcd34d",
+                    border_radius="0.9rem",
+                    padding="0.5rem 0.75rem",
                     font_size="13px",
                 ),
                 spacing="1",
@@ -377,14 +457,17 @@ def _menu_mediodia_section() -> rx.Component:
                     "Hamburguesa con patatas + 1 bebida",
                     max_length=2,
                 ),
-                rx.input(
+                rx.el.input(
                     placeholder="Nota ej: Sin lechuga, sin tomate / punto de la carne",
                     value=FormBaseState.menu_mediodia_notes["Hamburguesa con patatas + 1 bebida"],
                     on_change=lambda v: FormBaseState.update_menu_mediodia_note("Hamburguesa con patatas + 1 bebida", v),
                     width="100%",
                     background_color=Color.WHITE,
-                    border="1px solid #fcd34d",
-                    border_radius="0.5rem",
+                    border_width="2px",
+                    border_style="solid",
+                    border_color="#fcd34d",
+                    border_radius="0.9rem",
+                    padding="0.5rem 0.75rem",
                     font_size="13px",
                 ),
                 spacing="1",
@@ -401,14 +484,17 @@ def _menu_mediodia_section() -> rx.Component:
                     "Sandwich mixto con patatas + 1 bebida",
                     max_length=2,
                 ),
-                rx.input(
+                rx.el.input(
                     placeholder="Nota ej: Sin mayonesa / con queso",
                     value=FormBaseState.menu_mediodia_notes["Sandwich mixto con patatas + 1 bebida"],
                     on_change=lambda v: FormBaseState.update_menu_mediodia_note("Sandwich mixto con patatas + 1 bebida", v),
                     width="100%",
                     background_color=Color.WHITE,
-                    border="1px solid #fcd34d",
-                    border_radius="0.5rem",
+                    border_width="2px",
+                    border_style="solid",
+                    border_color="#fcd34d",
+                    border_radius="0.9rem",
+                    padding="0.5rem 0.75rem",
                     font_size="13px",
                 ),
                 spacing="1",
@@ -425,14 +511,17 @@ def _menu_mediodia_section() -> rx.Component:
                     "Pasta con tomate o aceite + 1 bebida",
                     max_length=2,
                 ),
-                rx.input(
+                rx.el.input(
                     placeholder="Nota ej: Con tomate / solo con aceite",
                     value=FormBaseState.menu_mediodia_notes["Pasta con tomate o aceite + 1 bebida"],
                     on_change=lambda v: FormBaseState.update_menu_mediodia_note("Pasta con tomate o aceite + 1 bebida", v),
                     width="100%",
                     background_color=Color.WHITE,
-                    border="1px solid #fcd34d",
-                    border_radius="0.5rem",
+                    border_width="2px",
+                    border_style="solid",
+                    border_color="#fcd34d",
+                    border_radius="0.9rem",
+                    padding="0.5rem 0.75rem",
                     font_size="13px",
                 ),
                 spacing="1",
@@ -691,67 +780,93 @@ def datos_personales(name_title, child_name_value, child_age_value, date_time, t
     return rx.vstack(
         _question(name_title),
         rx.flex(
-            rx.input(
+            rx.el.input(
                 placeholder="Nombre",
-                value=child_name_value,
+                default_value=child_name_value,
                 on_change=lambda new_value: FormBaseState.update_field("child_name", new_value),
-                height="40px",
+                height="3rem",
                 font_size="16px",
-                background_color=Color.WHITE,
-                border="1px solid rgba(124, 58, 237, 0.25)",
-                border_radius="0.5rem",
+                color=Color.NAVY,
+                background_color="#FDF2F8",
+                border_width="2px",
+                border_style="solid",
+                border_color="rgba(124, 58, 237, 0.25)",
+                border_radius="1rem",
+                padding="0.5rem 1rem",
                 flex="1 1 200px",
                 min_width="150px",
             ),
-            rx.select(
-                FormBaseState.AGE_OPTIONS,
+            rx.el.select(
+                rx.el.option("Edad 1-12", value="", disabled=True),
+                rx.foreach(
+                    FormBaseState.AGE_OPTIONS,
+                    lambda age: rx.el.option(age, value=age),
+                ),
                 value=child_age_value,
                 on_change=lambda v: FormBaseState.update_field("child_age", v),
-                placeholder="Edad 1-12",
-                height="40px",
+                background_color="#FDF2F8",
+                border_width="2px",
+                border_style="solid",
+                border_color="rgba(124, 58, 237, 0.25)",
+                border_radius="1rem",
+                padding="0.5rem 1rem",
+                color=Color.NAVY,
+                height="3rem",
                 font_size="16px",
-                background_color=Color.WHITE,
-                border="1px solid rgba(124, 58, 237, 0.25)",
-                border_radius="0.5rem",
-                flex="0 1 100px",
-                min_width="80px",
+                flex="0 1 130px",
+                min_width="110px",
+                cursor="pointer",
             ),
             wrap="wrap",
             width="100%",
-            gap="1rem",
+            gap="0.75rem",
         ),
-        _question(date_time, margin_top="1.5rem"),
+        _question(date_time, margin_top="1.25rem"),
         _hint(time_description),
         rx.flex(
-            rx.input(
+            rx.el.input(
                 placeholder="Fecha",
                 type="date",
-                value=birth_date_value,
+                default_value=birth_date_value,
                 on_change=lambda new_value: FormBaseState.update_field("birth_date", new_value),
-                is_disabled=FormBaseState.birth_date_locked,
-                height="40px",
+                disabled=FormBaseState.birth_date_locked,
+                height="3rem",
                 font_size="16px",
-                background_color=rx.cond(FormBaseState.birth_date_locked, "#f1f5f9", Color.WHITE),
-                border="1px solid rgba(124, 58, 237, 0.25)",
-                border_radius="0.5rem",
+                color=Color.NAVY,
+                background_color=rx.cond(FormBaseState.birth_date_locked, "#f1f5f9", "#FDF2F8"),
+                border_width="2px",
+                border_style="solid",
+                border_color="rgba(124, 58, 237, 0.25)",
+                border_radius="1rem",
+                padding="0.5rem 1rem",
                 flex="1 1 180px",
                 min_width="150px",
             ),
-            rx.select(
-                FormBaseState.birth_times_options,
+            rx.el.select(
+                rx.el.option("Hora", value="", disabled=True),
+                rx.foreach(
+                    FormBaseState.birth_times_options,
+                    lambda t: rx.el.option(t, value=t),
+                ),
                 name="birth_time",
-                placeholder="Hora",
                 on_change=FormBaseState.set_birth_time,
-                size="3",
                 value=FormBaseState.birth_time,
-                height="40px",
+                background_color="#FDF2F8",
+                border_width="2px",
+                border_style="solid",
+                border_color="rgba(124, 58, 237, 0.25)",
+                border_radius="1rem",
+                padding="0.5rem 1rem",
+                color=Color.NAVY,
+                height="3rem",
                 font_size="16px",
                 flex="1 1 180px",
                 min_width="150px",
+                cursor="pointer",
             ),
             wrap="wrap",
             width="100%",
-            gap="1rem",
+            gap="0.75rem",
         ),
         width="100%",
     )
@@ -834,14 +949,14 @@ def seleccion_pizzas(pizza_title, pizza_description, pizza_selected_values, rosc
         _hint(pizza_description),
         rx.flex(
             rx.vstack(
-                rx.text("Pizzas", weight="bold", color=Color.PINK, margin_bottom="0.25rem"),
+                rx.text("Pizzas", weight="bold", color=Color.PURPLE_DARK, margin_bottom="0.25rem"),
                 *pizza_inputs,
                 align_items="start",
                 flex="1 1 200px",
                 min_width="180px",
             ),
             rx.vstack(
-                rx.text("Roscas", weight="bold", color=Color.PINK, margin_bottom="0.25rem"),
+                rx.text("Roscas", weight="bold", color=Color.PURPLE_DARK, margin_bottom="0.25rem"),
                 *rosca_inputs,
                 align_items="start",
                 flex="1 1 200px",
@@ -888,14 +1003,14 @@ def seleccion_bebidas(drink_title, drink_description, drink_selected_values, max
         _hint(drink_description),
         rx.flex(
             rx.vstack(
-                rx.text("Refrescos", weight="bold", color=Color.PINK, margin_bottom="0.25rem"),
+                rx.text("Refrescos", weight="bold", color=Color.PURPLE_DARK, margin_bottom="0.25rem"),
                 *drink_inputs_col1,
                 align_items="start",
                 flex="1 1 200px",
                 min_width="180px",
             ),
             rx.vstack(
-                rx.text("Zumos, batidos, agua", weight="bold", color=Color.PINK, margin_bottom="0.25rem"),
+                rx.text("Zumos, batidos, agua", weight="bold", color=Color.PURPLE_DARK, margin_bottom="0.25rem"),
                 *drink_inputs_col2,
                 align_items="start",
                 flex="1 1 200px",
@@ -921,16 +1036,20 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
             FormBaseState.selected_bakery_option.lower().contains("tarta panadería"),
             rx.hstack(
                 rx.text("Peso aproximado (kg):", weight="medium"),
-                rx.input(
+                rx.el.input(
                     value=FormBaseState.bakery_weight.to_string(),
-                    on_change=FormBaseState.update_bakery_weight,
+                    on_change=lambda v: FormBaseState.update_bakery_weight(v),
                     type="number",
                     width="100px",
                     min="0",
                     step="0.1",
-                    background_color=Color.WHITE,
-                    border="1px solid rgba(124, 58, 237, 0.25)",
-                    border_radius="0.5rem",
+                    background_color="#FDF2F8",
+                    border_width="2px",
+                    border_style="solid",
+                    border_color="rgba(124, 58, 237, 0.25)",
+                    border_radius="0.9rem",
+                    padding="0.5rem 0.75rem",
+                    color=Color.NAVY,
                 ),
                 align_items="center",
                 spacing="2",
@@ -942,7 +1061,7 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
         # Precio de la repostería
         rx.hstack(
             rx.text("Precio Repostería:", weight="bold"),
-            rx.text(f"{FormBaseState.bakery_price:.2f}€", weight="bold", color=Color.PINK),
+            rx.text(f"{FormBaseState.bakery_price:.2f}€", weight="bold", color=Color.PURPLE_DARK),
             margin_top="0.75rem",
             spacing="2",
         ),
@@ -950,16 +1069,21 @@ def extras_y_observaciones(extra_title, extra_description, extra_selected, baker
         rx.divider(margin_y="1rem"),
 
         _question(observation_title),
-        rx.text_area(
+        rx.el.textarea(
             placeholder="Observaciones",
-            value=observation_selected_value,
+            default_value=observation_selected_value,
             on_change=lambda new_value: FormBaseState.update_field("observation_selected", new_value),
             width="100%",
-            height="80px",
+            rows=3,
             margin_top="0.75rem",
-            background_color=Color.WHITE,
-            border="1px solid rgba(124, 58, 237, 0.25)",
-            border_radius="0.5rem",
+            background_color="#FDF2F8",
+            border_width="2px",
+            border_style="solid",
+            border_color="rgba(124, 58, 237, 0.25)",
+            border_radius="1rem",
+            padding="0.75rem 1rem",
+            color=Color.NAVY,
+            font_size="16px",
         ),
         width="100%",
     )
@@ -1098,7 +1222,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
         _hint("Selecciona las unidades adicionales que desees añadir a tu pedido."),
 
         # Sección Comida
-        rx.text("Pizzas y Roscas", weight="bold", color=Color.PINK, margin_top="1rem"),
+        rx.text("Pizzas y Roscas", weight="bold", color=Color.PURPLE_DARK, margin_top="1rem"),
         rx.flex(
             rx.vstack(
                 rx.text("Pizzas", weight="bold", color=Color.PURPLE_DARK, margin_bottom="0.25rem"),
@@ -1123,7 +1247,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
         rx.divider(margin_y="1rem"),
 
         # Sección Bebidas
-        rx.text("Bebidas", weight="bold", color=Color.PINK),
+        rx.text("Bebidas", weight="bold", color=Color.PURPLE_DARK),
         _hint("(tenga en cuenta que los cafés, bebidas alcohólicas etc. van aparte)"),
         rx.flex(
             rx.vstack(
@@ -1149,10 +1273,10 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
         rx.divider(margin_y="1rem"),
 
         # Sección Chuches
-        rx.text("Chuches", weight="bold", color=Color.PINK),
+        rx.text("Chuches", weight="bold", color=Color.PURPLE_DARK),
         _option_row(
             candy_count.to_string(),
-            FormBaseState.update_candy_count,
+            lambda v: FormBaseState.update_candy_count(v),
             "Plato de Chuches",
             price=f"{FormBaseState.price_candy}€",
             max_length=2,
@@ -1172,7 +1296,7 @@ def seleccion_extras(extra_pizza_selected, extra_rosca_selected, extra_drink_sel
                     f"{FormBaseState.total_extra_food_price + FormBaseState.total_extra_drink_price + FormBaseState.total_candy_price:.2f}€",
                     weight="bold",
                     size="5",
-                    color=Color.PINK,
+                    color=Color.PURPLE_DARK,
                 ),
                 justify_content="space-between",
                 width="100%",
@@ -1189,10 +1313,10 @@ def seleccion_extras_mediodia(candy_count):
         _hint("En Pack Mediodía solo puedes añadir chuches como extra. La repostería se elige abajo."),
         _hint("Las pizzas o bebidas extra se servirán a precio de carta: pidelas en Observaciones."),
         # Sección Chuches
-        rx.text("Chuches", weight="bold", color=Color.PINK),
+        rx.text("Chuches", weight="bold", color=Color.PURPLE_DARK),
         _option_row(
             candy_count.to_string(),
-            FormBaseState.update_candy_count,
+            lambda v: FormBaseState.update_candy_count(v),
             "Plato de Chuches",
             price=f"{FormBaseState.price_candy}€",
             max_length=2,
@@ -1210,7 +1334,7 @@ def seleccion_extras_mediodia(candy_count):
                     f"{FormBaseState.total_candy_price:.2f}€",
                     weight="bold",
                     size="5",
-                    color=Color.PINK,
+                    color=Color.PURPLE_DARK,
                 ),
                 justify_content="space-between",
                 width="100%",

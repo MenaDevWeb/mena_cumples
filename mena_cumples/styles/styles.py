@@ -37,6 +37,13 @@ class Color:
     GRAY_DISABLED = "#f0f0f0"
     GRAY_BORDER = "#d1d5db"
     WARNING = "#f59e0b"
+    SUNNY = "#FFC93C"
+    SUNNY_BG = "#FEF9C3"
+    SKY = "#0EA5E9"
+    SKY_BG = "#E0F2FE"
+    MINT = "#10B981"
+    MINT_BG = "#D1FAE5"
+    NAVY = "#4C1D95"
     ERROR = "#dc2626"
     ERROR_BG = "#fef2f2"
     ORANGE = "#f97316"
@@ -44,6 +51,8 @@ class Color:
 
     GRADIENT_NAVBAR = "bg-gradient-to-r from-pink-200 to-pink-300 via-purple-200"
     GRADIENT_FORM = "bg-gradient-to-br from-pink-100 to-purple-100"
+    GRADIENT_HERO = "bg-gradient-to-br from-pink-200 via-purple-100 to-yellow-100"
+    GRADIENT_PARTY = "bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500"
 
 class FontSize:
     XS = "0.75rem"
