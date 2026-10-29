@@ -516,9 +516,9 @@ class FormBaseState(rx.State):
         elif "tarta panadería" in option:
             price = 18.0 * self.bakery_weight
         elif "kinder" in option: # Palmera kinder (más específica primero)
-            price = 28.0
+            price = 40.0
         elif "palmera gigante de chocolate" in option: # Palmera normal
-            price = 25.0
+            price = 40.0
         elif "la tarta la traemos nosotros" in option:
             price = 0.0
         

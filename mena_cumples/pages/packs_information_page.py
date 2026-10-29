@@ -249,7 +249,7 @@ def _create_extras_card():
         "Bizcocho de cafetería (normal, de chocolate, con o sin cobertura) para 8 a 10 pax: 10€.",
         "Tarta de galletas de cafetería: 15€.",
         "Tarta panadería: 18€ el Kg.",
-        "Palmera de chocolate: 25€ (Con relleno Kinder: 28€)",
+        "Palmera de chocolate: 40€ (Con relleno Kinder: 40€)",
     ]
     return rx.box(
         rx.hstack(
