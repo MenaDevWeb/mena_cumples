@@ -39,7 +39,7 @@ current_bakery_options = [
     "Tarta de Galletas casera (natillas, chocolate y galletas)--15€--de 12 a 15 personas.",
     "Bizcocho ---10€-- de 8 a 10 personas.",
     "Tarta Panadería--personalizable a 18€ el kilo.",
-    "Palmera gigante de Chocolate--25€.",
-    "Palmera gigante de Chocolate y relleno de kinder--28€.",
+    "Palmera gigante de Chocolate--40€.",
+    "Palmera gigante de Chocolate y relleno de kinder--40€.",
     "LA TARTA LA TRAEMOS NOSOTROS.",
 ]
